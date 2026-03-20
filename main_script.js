@@ -37,9 +37,9 @@ const CONFIG = {
 
   map: {
     center: [35.0844, -106.6504],
-    zoom: 11,
-    minZoom: 9,
-    maxZoom: 19,
+    zoom: 12,
+    minZoom: 12,
+    maxZoom: 17,
     tileUrl: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
     tileOptions: {
       attribution:
@@ -113,9 +113,9 @@ const CONFIG = {
     { key: "weekday_peak", label: "Weekday Peak (8 AM)" },
     { key: "weekday_offpeak", label: "Weekday Off-Peak (2 PM)" },
     { key: "weekday_evening", label: "Weekday Evening (8 PM)" },
-    { key: "weekend_peak", label: "Weekend Peak" },
-    { key: "weekend_offpeak", label: "Weekend Off-Peak" },
-    { key: "weekend_evening", label: "Weekend Evening" }
+    { key: "weekend_peak", label: "Weekend Peak (8 AM)" },
+    { key: "weekend_offpeak", label: "Weekend Off-Peak (2 PM)" },
+    { key: "weekend_evening", label: "Weekend Evening (8 PM)" }
   ],
 
   colors: ["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
@@ -184,7 +184,9 @@ const dom = {
   geocoderContainer: document.getElementById("geocoder-container"),
   clearSelectionBtn: document.getElementById("clearSelectionBtn"),
   selectedBlockContent: document.getElementById("selectedBlockContent"),
-  legendContent: document.getElementById("legend-content")
+  legendContent: document.getElementById("legend-content"),
+  chartsPanel: document.getElementById("charts-panel"),
+  toggleChartsBtn: document.getElementById("toggleChartsBtn")
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -246,6 +248,14 @@ function initControls() {
   });
 
   dom.clearSelectionBtn.addEventListener("click", returnToChoropleth);
+  
+  if (dom.toggleChartsBtn && dom.chartsPanel) {
+  dom.toggleChartsBtn.addEventListener("click", () => {
+    const isCollapsed = dom.chartsPanel.classList.toggle("collapsed");
+    dom.chartsPanel.classList.toggle("expanded", !isCollapsed);
+    dom.toggleChartsBtn.setAttribute("aria-expanded", String(!isCollapsed));
+  });
+}
 }
 
 function initGeocoder() {
@@ -524,7 +534,7 @@ function buildSelectedBlockPopupContent(feature) {
       <p><strong>Metric:</strong> ${metricConfig.label}</p>
       <p><strong>Time Scenario:</strong> ${timeLabel}</p>
       <p><strong>Accessibility Value:</strong> ${metricConfig.formatter(metricValue)}</p>
-      <p><strong>SVI:</strong> ${CONFIG.metrics.svi.formatter(sviValue)}</p>
+      <p><strong> Social Vulnerability Index (SVI):</strong> ${CONFIG.metrics.svi.formatter(sviValue)}</p>
     </div>
   `;
 }
@@ -652,23 +662,23 @@ function handleGeocodeResult(latlng, label) {
 function updateCharts() {
   const chartsPanel = document.getElementById("charts-panel");
 
-  if (appState.selectedMetric === "svi") {
-    if (appState.charts.metricChart) {
-      appState.charts.metricChart.destroy();
-      appState.charts.metricChart = null;
-    }
-
-    if (appState.charts.scatterChart) {
-      appState.charts.scatterChart.destroy();
-      appState.charts.scatterChart = null;
-    }
-
-    if (chartsPanel) {
-      chartsPanel.classList.add("hidden");
-    }
-
-    return;
+ if (appState.selectedMetric === "svi") {
+  if (appState.charts.metricChart) {
+    appState.charts.metricChart.destroy();
+    appState.charts.metricChart = null;
   }
+
+  if (appState.charts.scatterChart) {
+    appState.charts.scatterChart.destroy();
+    appState.charts.scatterChart = null;
+  }
+
+  if (chartsPanel) {
+    chartsPanel.classList.remove("hidden");
+  }
+
+  return;
+}
 
   if (chartsPanel) {
     chartsPanel.classList.remove("hidden");

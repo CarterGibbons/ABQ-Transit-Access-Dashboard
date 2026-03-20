@@ -128,8 +128,8 @@
       <!-- Selected Block Info -->
       <section class="panel-section" id="info-panel">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h3 class="section-title mb-0">Selected Block</h3>
-          <button id="clearSelectionBtn" class="btn btn-sm btn-outline-secondary">Clear</button>
+          <!-- <h3 class="section-title mb-0">Selected Block</h3> -->
+          <button id="clearSelectionBtn" class="btn btn-sm btn-outline-secondary">Clear Selected Block</button>
         </div>
         <!-- <div id="selectedBlockContent">
           <p class="text-muted mb-0">No block selected. Click a block or search for an address.</p>
@@ -145,8 +145,32 @@
       </section>
     </aside>
 
+    <!-- side chart panel -->
+    <section id="charts-panel" class="shadow expanded">
+  <button
+    id="toggleChartsBtn"
+    class="charts-toggle-btn"
+    type="button"
+    aria-expanded="true"
+    aria-controls="charts-panel-inner"
+  >
+    Charts
+  </button>
+
+  <div id="charts-panel-inner">
+    <div class="chart-card">
+      <h3 class="chart-title">Selected Block Across Time Periods</h3>
+      <canvas id="metricChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3 class="chart-title">Accessibility and Social Vulnerability</h3>
+      <canvas id="scatterChart"></canvas>
+    </div>
+  </div>
+</section>
     <!-- Bottom Charts Panel -->
-    <section id="charts-panel" class="shadow">
+    <!-- <section id="charts-panel" class="shadow">
       <div class="container-fluid">
         <div class="row g-3">
           <div class="col-md-6">
@@ -163,7 +187,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
   </div>
 <!-- App Script -->
