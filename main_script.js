@@ -110,9 +110,9 @@ const CONFIG = {
   },
 
   timePeriods: [
-    { key: "weekday_peak", label: "Weekday Peak" },
-    { key: "weekday_offpeak", label: "Weekday Off-Peak" },
-    { key: "weekday_evening", label: "Weekday Evening" },
+    { key: "weekday_peak", label: "Weekday Peak (8 AM)" },
+    { key: "weekday_offpeak", label: "Weekday Off-Peak (2 PM)" },
+    { key: "weekday_evening", label: "Weekday Evening (8 PM)" },
     { key: "weekend_peak", label: "Weekend Peak" },
     { key: "weekend_offpeak", label: "Weekend Off-Peak" },
     { key: "weekend_evening", label: "Weekend Evening" }
@@ -164,6 +164,12 @@ const appState = {
   addressMarker: null,
   geocoderControl: null,
   isochroneCache: {},
+  
+  classification: {
+    values: [],
+    breaks: []
+  },
+
   charts: {
     metricChart: null,
     scatterChart: null
@@ -344,6 +350,10 @@ function returnToChoropleth() {
 function refreshView() {
   if (!appState.blockLayer) return;
 
+  if (appState.mode === "choropleth") {
+    updateClassification();
+  }
+
   appState.blockLayer.setStyle(styleBlockFeature);
 
   if (appState.mode === "choropleth") {
@@ -359,6 +369,26 @@ function refreshView() {
     openSelectedBlockPopup(appState.selectedFeature);
   }
 }
+
+// old refresh view
+// function refreshView() {
+//   if (!appState.blockLayer) return;
+
+//   appState.blockLayer.setStyle(styleBlockFeature);
+
+//   if (appState.mode === "choropleth") {
+//     clearIsochrone();
+//   } else {
+//     renderIsochroneForSelection();
+//   }
+
+//   updateLegend();
+//   updateCharts();
+
+//   if (appState.selectedFeature) {
+//     openSelectedBlockPopup(appState.selectedFeature);
+//   }
+// }
 
 function styleBlockFeature(feature) {
   const isSelected = getBlockId(feature) === appState.selectedBlockId;
@@ -390,22 +420,42 @@ function getCurrentMetricValue(feature) {
   const fieldName = metric.fields[appState.selectedTimePeriod];
   return safeNumber(feature.properties[fieldName]);
 }
+// old color for value
+// function getColorForValue(value) {
+//   if (value === null || value === undefined || Number.isNaN(value)) {
+//     return "#d9d9d9";
+//   }
+
+//   const values = appState.blocksGeoJSON.features
+//     .map(getCurrentMetricValue)
+//     .filter(v => v !== null && !Number.isNaN(v))
+//     .sort((a, b) => a - b);
+
+//   if (!values.length) {
+//     return "#d9d9d9";
+//   }
+
+//   const breaks = getQuantileBreaks(values, CONFIG.colors.length);
+
+//   for (let i = 0; i < breaks.length; i += 1) {
+//     if (value <= breaks[i]) {
+//       return CONFIG.colors[i];
+//     }
+//   }
+
+//   return CONFIG.colors[CONFIG.colors.length - 1];
+// }
 
 function getColorForValue(value) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "#d9d9d9";
   }
 
-  const values = appState.blocksGeoJSON.features
-    .map(getCurrentMetricValue)
-    .filter(v => v !== null && !Number.isNaN(v))
-    .sort((a, b) => a - b);
+  const breaks = appState.classification.breaks;
 
-  if (!values.length) {
+  if (!breaks.length) {
     return "#d9d9d9";
   }
-
-  const breaks = getQuantileBreaks(values, CONFIG.colors.length);
 
   for (let i = 0; i < breaks.length; i += 1) {
     if (value <= breaks[i]) {
@@ -431,17 +481,19 @@ function updateLegend() {
     return;
   }
 
-  const values = appState.blocksGeoJSON.features
-    .map(getCurrentMetricValue)
-    .filter(v => v !== null && !Number.isNaN(v))
-    .sort((a, b) => a - b);
-
+  const values = appState.classification.values;
+  // const values = appState.blocksGeoJSON.features
+  //   .map(getCurrentMetricValue)
+  //   .filter(v => v !== null && !Number.isNaN(v))
+  //   .sort((a, b) => a - b);
+  
   if (!values.length) {
     dom.legendContent.innerHTML = `<p class="mb-0 text-muted">No values available.</p>`;
     return;
   }
 
-  const breaks = getQuantileBreaks(values, CONFIG.colors.length);
+  // const breaks = getQuantileBreaks(values, CONFIG.colors.length);
+  const breaks = appState.classification.breaks;
   const legendItems = breaks.map((breakValue, index) => {
     const minValue = index === 0 ? values[0] : breaks[index - 1];
     return `
@@ -468,10 +520,10 @@ function buildSelectedBlockPopupContent(feature) {
 
   return `
     <div class="popup-block-info">
-      <p><strong>Block ID:</strong> ${blockId || "N/A"}</p>
+      <!-- <p><strong>Block ID:</strong> ${blockId || "N/A"}</p> -->
       <p><strong>Metric:</strong> ${metricConfig.label}</p>
       <p><strong>Time Scenario:</strong> ${timeLabel}</p>
-      <p><strong>Selected Value:</strong> ${metricConfig.formatter(metricValue)}</p>
+      <p><strong>Accessibility Value:</strong> ${metricConfig.formatter(metricValue)}</p>
       <p><strong>SVI:</strong> ${CONFIG.metrics.svi.formatter(sviValue)}</p>
     </div>
   `;
@@ -515,7 +567,8 @@ async function renderIsochroneForSelection() {
     if (!selectedFeature) return;
 
     appState.isochroneLayer = L.geoJSON(selectedFeature, {
-      style: CONFIG.styles.isochrone
+      style: CONFIG.styles.isochrone,
+      interactive: false
     }).addTo(appState.map);
 
     const bounds = appState.isochroneLayer.getBounds();
@@ -590,8 +643,37 @@ function handleGeocodeResult(latlng, label) {
 
   selectBlock(containingFeature);
 }
+// old chart update block
+// function updateCharts() {
+//   updateMetricChart();
+//   updateScatterChart();
+// }
 
 function updateCharts() {
+  const chartsPanel = document.getElementById("charts-panel");
+
+  if (appState.selectedMetric === "svi") {
+    if (appState.charts.metricChart) {
+      appState.charts.metricChart.destroy();
+      appState.charts.metricChart = null;
+    }
+
+    if (appState.charts.scatterChart) {
+      appState.charts.scatterChart.destroy();
+      appState.charts.scatterChart = null;
+    }
+
+    if (chartsPanel) {
+      chartsPanel.classList.add("hidden");
+    }
+
+    return;
+  }
+
+  if (chartsPanel) {
+    chartsPanel.classList.remove("hidden");
+  }
+
   updateMetricChart();
   updateScatterChart();
 }
@@ -729,6 +811,20 @@ function getQuantileBreaks(sortedValues, classCount) {
   }
 
   return breaks;
+}
+
+function updateClassification() {
+  if (!appState.blocksGeoJSON) return;
+
+  const values = appState.blocksGeoJSON.features
+    .map(getCurrentMetricValue)
+    .filter(v => v !== null && !Number.isNaN(v))
+    .sort((a, b) => a - b);
+
+  appState.classification.values = values;
+  appState.classification.breaks = values.length
+    ? getQuantileBreaks(values, CONFIG.colors.length)
+    : [];
 }
 
 function formatLegendRange(min, max) {
