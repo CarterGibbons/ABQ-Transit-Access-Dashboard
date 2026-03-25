@@ -184,9 +184,12 @@ const dom = {
   geocoderContainer: document.getElementById("geocoder-container"),
   clearSelectionBtn: document.getElementById("clearSelectionBtn"),
   selectedBlockContent: document.getElementById("selectedBlockContent"),
+  legendPanel: document.getElementById("legend-panel"),
   legendContent: document.getElementById("legend-content"),
   chartsPanel: document.getElementById("charts-panel"),
-  toggleChartsBtn: document.getElementById("toggleChartsBtn")
+  toggleChartsBtn: document.getElementById("toggleChartsBtn"),
+  sviTimeNote: document.getElementById("sviTimeNote")
+
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -204,7 +207,7 @@ function initMap() {
     zoom: CONFIG.map.zoom,
     minZoom: CONFIG.map.minZoom,
     maxZoom: CONFIG.map.maxZoom,
-    zoomControl: true
+    zoomControl: false
   });
 
   L.tileLayer(CONFIG.map.tileUrl, CONFIG.map.tileOptions).addTo(appState.map);
@@ -326,13 +329,11 @@ function onEachBlockFeature(feature, layer) {
 function selectBlock(feature, layer = null) {
   appState.selectedFeature = feature;
   appState.selectedBlockId = getBlockId(feature);
-  appState.mode = "isochrone";
-  dom.isochroneMode.checked = true;
 
   if (layer) {
     const bounds = layer.getBounds();
     if (bounds.isValid()) {
-      appState.map.fitBounds(bounds, { padding: [60, 60] });
+      appState.map.panTo(bounds.getCenter());
     }
   }
 
@@ -374,6 +375,7 @@ function refreshView() {
 
   updateLegend();
   updateCharts();
+  updateSviTimeNote();
 
   if (appState.selectedFeature) {
     openSelectedBlockPopup(appState.selectedFeature);
@@ -476,33 +478,33 @@ function getColorForValue(value) {
   return CONFIG.colors[CONFIG.colors.length - 1];
 }
 
+function updateSviTimeNote() {
+  if (!dom.sviTimeNote) return;
+
+  if (appState.selectedMetric === "svi") {
+    dom.sviTimeNote.classList.remove("hidden");
+  } else {
+    dom.sviTimeNote.classList.add("hidden");
+  }
+}
+
 function updateLegend() {
-  if (appState.mode === "isochrone") {
-    dom.legendContent.innerHTML = `
-      <div class="legend-item">
-        <span class="legend-swatch" style="background:#ffffff;border:2px solid #111111;"></span>
-        <span>Selected block</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-swatch" style="background:#60a5fa;border:1px solid #2563eb;"></span>
-        <span>30-minute isochrone</span>
-      </div>
-    `;
+  if (!dom.legendPanel || !dom.legendContent) return;
+
+  if (appState.mode !== "choropleth") {
+    dom.legendPanel.classList.add("hidden");
     return;
   }
 
+  dom.legendPanel.classList.remove("hidden");
+
   const values = appState.classification.values;
-  // const values = appState.blocksGeoJSON.features
-  //   .map(getCurrentMetricValue)
-  //   .filter(v => v !== null && !Number.isNaN(v))
-  //   .sort((a, b) => a - b);
-  
+
   if (!values.length) {
     dom.legendContent.innerHTML = `<p class="mb-0 text-muted">No values available.</p>`;
     return;
   }
 
-  // const breaks = getQuantileBreaks(values, CONFIG.colors.length);
   const breaks = appState.classification.breaks;
   const legendItems = breaks.map((breakValue, index) => {
     const minValue = index === 0 ? values[0] : breaks[index - 1];
@@ -525,16 +527,22 @@ function buildSelectedBlockPopupContent(feature) {
   const metricConfig = CONFIG.metrics[appState.selectedMetric];
   const metricValue = getCurrentMetricValue(feature);
   const sviValue = safeNumber(feature.properties[CONFIG.metrics.svi.field]);
-  const blockId = getBlockId(feature);
   const timeLabel = getTimeLabel(appState.selectedTimePeriod);
+
+  if (appState.mode === "choropleth" && appState.selectedMetric === "svi") {
+    return `
+      <div class="popup-block-info">
+        <p><strong>Social Vulnerability Index (SVI):</strong> ${CONFIG.metrics.svi.formatter(sviValue)}</p>
+      </div>
+    `;
+  }
 
   return `
     <div class="popup-block-info">
-      <!-- <p><strong>Block ID:</strong> ${blockId || "N/A"}</p> -->
       <p><strong>Metric:</strong> ${metricConfig.label}</p>
       <p><strong>Time Scenario:</strong> ${timeLabel}</p>
       <p><strong>Accessibility Value:</strong> ${metricConfig.formatter(metricValue)}</p>
-      <p><strong> Social Vulnerability Index (SVI):</strong> ${CONFIG.metrics.svi.formatter(sviValue)}</p>
+      <p><strong>Social Vulnerability Index (SVI):</strong> ${CONFIG.metrics.svi.formatter(sviValue)}</p>
     </div>
   `;
 }
@@ -660,28 +668,22 @@ function handleGeocodeResult(latlng, label) {
 // }
 
 function updateCharts() {
-  const chartsPanel = document.getElementById("charts-panel");
+  const metricContainer = document.getElementById("metricChart");
+  const scatterContainer = document.getElementById("scatterChart");
 
- if (appState.selectedMetric === "svi") {
-  if (appState.charts.metricChart) {
-    appState.charts.metricChart.destroy();
+  if (appState.selectedMetric === "svi") {
+    if (metricContainer) {
+      metricContainer.innerHTML = "";
+    }
+
+    if (scatterContainer) {
+      scatterContainer.innerHTML = "";
+    }
+
     appState.charts.metricChart = null;
-  }
-
-  if (appState.charts.scatterChart) {
-    appState.charts.scatterChart.destroy();
     appState.charts.scatterChart = null;
-  }
 
-  if (chartsPanel) {
-    chartsPanel.classList.remove("hidden");
-  }
-
-  return;
-}
-
-  if (chartsPanel) {
-    chartsPanel.classList.remove("hidden");
+    return;
   }
 
   updateMetricChart();
@@ -689,63 +691,100 @@ function updateCharts() {
 }
 
 function updateMetricChart() {
-  const canvas = document.getElementById("metricChart");
-  if (!canvas || typeof Chart === "undefined") return;
+  const container = document.getElementById("metricChart");
+  if (!container || typeof d3 === "undefined") return;
 
-  if (appState.charts.metricChart) {
-    appState.charts.metricChart.destroy();
-    appState.charts.metricChart = null;
-  }
+  container.innerHTML = "";
 
   if (!appState.selectedFeature) return;
 
   const metricConfig = CONFIG.metrics[appState.selectedMetric];
+  if (metricConfig.type === "static") return;
 
-  if (metricConfig.type === "static") {
-    return;
-  }
-
-  const labels = CONFIG.timePeriods.map(period => period.label);
-  const values = CONFIG.timePeriods.map(period => {
+  const data = CONFIG.timePeriods.map(period => {
     const field = metricConfig.fields[period.key];
-    return safeNumber(appState.selectedFeature.properties[field]) || 0;
+    return {
+      label: period.label,
+      value: safeNumber(appState.selectedFeature.properties[field]) || 0,
+      key: period.key
+    };
   });
 
-  appState.charts.metricChart = new Chart(canvas.getContext("2d"), {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: metricConfig.label,
-          data: values,
-          borderWidth: 1
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
+  const margin = { top: 10, right: 10, bottom: 55, left: 55 };
+  const width = container.clientWidth || 320;
+  const height = container.clientHeight || 220;
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const svg = d3
+    .select(container)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  const g = svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const xScale = d3
+    .scaleBand()
+    .domain(data.map(d => d.label))
+    .range([0, innerWidth])
+    .padding(0.2);
+
+  const yMax = d3.max(data, d => d.value) || 0;
+
+  const yScale = d3
+    .scaleLinear()
+    .domain([0, yMax === 0 ? 1 : yMax])
+    .nice()
+    .range([innerHeight, 0]);
+
+  g.selectAll("rect")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", d => xScale(d.label))
+    .attr("y", d => yScale(d.value))
+    .attr("width", xScale.bandwidth())
+    .attr("height", d => innerHeight - yScale(d.value))
+     .attr("fill", "#3182bd");
+
+  g.append("g")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(xScale))
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-0.6em")
+    .attr("dy", "0.15em")
+    .attr("transform", "rotate(-30)");
+
+  g.append("g")
+    .call(d3.axisLeft(yScale));
+
+  g.append("text")
+    .attr("x", innerWidth / 2)
+    .attr("y", innerHeight + 48)
+    .attr("text-anchor", "middle")
+    .attr("fill", "#222")
+    .style("font-size", "12px")
+    .text("Time Scenario");
+
+  g.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -innerHeight / 2)
+    .attr("y", -43)
+    .attr("text-anchor", "middle")
+    .attr("fill", "#222")
+    .style("font-size", "12px")
+    .text(metricConfig.label);
 }
 
 function updateScatterChart() {
-  const canvas = document.getElementById("scatterChart");
-  if (!canvas || typeof Chart === "undefined") return;
+  const container = document.getElementById("scatterChart");
+  if (!container || typeof d3 === "undefined" || typeof d3.hexbin === "undefined") return;
 
-  if (appState.charts.scatterChart) {
-    appState.charts.scatterChart.destroy();
-    appState.charts.scatterChart = null;
-  }
+  container.innerHTML = "";
 
   if (!appState.blocksGeoJSON) return;
 
@@ -754,7 +793,7 @@ function updateScatterChart() {
     ? metricConfig.field
     : metricConfig.fields[appState.selectedTimePeriod];
 
-  const allPoints = appState.blocksGeoJSON.features
+  const rawPoints = appState.blocksGeoJSON.features
     .map(feature => ({
       x: safeNumber(feature.properties.SVI),
       y: safeNumber(feature.properties[field]),
@@ -762,50 +801,101 @@ function updateScatterChart() {
     }))
     .filter(point => point.x !== null && point.y !== null);
 
+  if (!rawPoints.length) return;
+
   const selectedPoint = appState.selectedFeature
-    ? [{
+    ? {
         x: safeNumber(appState.selectedFeature.properties.SVI),
         y: safeNumber(appState.selectedFeature.properties[field])
-      }]
-    : [];
-
-  appState.charts.scatterChart = new Chart(canvas.getContext("2d"), {
-    type: "scatter",
-    data: {
-      datasets: [
-        {
-          label: "All Blocks",
-          data: allPoints,
-          pointRadius: 3,
-          pointHoverRadius: 5
-        },
-        {
-          label: "Selected Block",
-          data: selectedPoint,
-          pointRadius: 6,
-          pointHoverRadius: 7
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "SVI"
-          }
-        },
-        y: {
-          title: {
-            display: true,
-            text: metricConfig.label
-          }
-        }
       }
-    }
-  });
+    : null;
+
+  const margin = { top: 10, right: 16, bottom: 42, left: 52 };
+  const width = container.clientWidth || 320;
+  const height = container.clientHeight || 300;
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const svg = d3
+    .select(container)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  const g = svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const xExtent = d3.extent(rawPoints, d => d.x);
+  const yExtent = d3.extent(rawPoints, d => d.y);
+
+  const xPadding = (xExtent[1] - xExtent[0]) * 0.05 || 0.05;
+  const yPadding = (yExtent[1] - yExtent[0]) * 0.05 || 1;
+
+  const xScale = d3.scaleLinear()
+    .domain([xExtent[0] - xPadding, xExtent[1] + xPadding])
+    .range([0, innerWidth]);
+
+  const yScale = d3.scaleLinear()
+    .domain([yExtent[0] - yPadding, yExtent[1] + yPadding])
+    .nice()
+    .range([innerHeight, 0]);
+
+  const points = rawPoints.map(d => [xScale(d.x), yScale(d.y)]);
+
+  const hexbin = d3.hexbin()
+    .radius(10)
+    .extent([[0, 0], [innerWidth, innerHeight]]);
+
+  const bins = hexbin(points);
+
+  const color = d3.scaleSequential()
+    .domain([0, d3.max(bins, d => d.length) || 1])
+    .interpolator(d3.interpolateBlues);
+
+  g.append("g")
+    .selectAll("path")
+    .data(bins)
+    .join("path")
+    .attr("d", hexbin.hexagon())
+    .attr("transform", d => `translate(${d.x},${d.y})`)
+    .attr("fill", d => color(d.length))
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", 0.5);
+
+  if (selectedPoint && selectedPoint.x !== null && selectedPoint.y !== null) {
+    g.append("circle")
+      .attr("cx", xScale(selectedPoint.x))
+      .attr("cy", yScale(selectedPoint.y))
+      .attr("r", 5)
+      .attr("fill", "#111111")
+      .attr("stroke", "#ffffff")
+      .attr("stroke-width", 1.5);
+  }
+
+  g.append("g")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(xScale));
+
+  g.append("g")
+    .call(d3.axisLeft(yScale));
+
+  g.append("text")
+    .attr("x", innerWidth / 2)
+    .attr("y", innerHeight + 48)
+    .attr("text-anchor", "middle")
+    .attr("fill", "#222")
+    .style("font-size", "12px")
+    .text("SVI");
+
+  g.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -innerHeight / 2)
+    .attr("y", -43)
+    .attr("text-anchor", "middle")
+    .attr("fill", "#222")
+    .style("font-size", "12px")
+    .text(metricConfig.label);
 }
 
 function getQuantileBreaks(sortedValues, classCount) {

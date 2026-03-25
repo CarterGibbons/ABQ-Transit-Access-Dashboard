@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,11 +18,13 @@
   <script src="JS_CSS_downloaded_libraries/topojson/topojson-client.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.3.4/turf.min.js"></script>
   <script src="JS_CSS_downloaded_libraries/chartjs/chart.umd.js"></script>
-  
+  <script src="JS_CSS_downloaded_libraries/d3/d3.v7.js"></script>
+  <script src="JS_CSS_downloaded_libraries/d3/d3-hexbin.v0.2.min.js"></script>
 
-  
+
 
 </head>
+
 <body>
 
   <!-- Intro Modal -->
@@ -104,6 +107,9 @@
             <option value="weekend_evening">Weekend Evening (8 PM)</option>
           </select>
         </div>
+        <p id="sviTimeNote" class="small text-muted mt-2 mb-0">
+          NOTE: SVI value is the same across all time periods
+        </p>
       </section>
 
       <!-- View Toggle -->
@@ -135,40 +141,33 @@
           <p class="text-muted mb-0">No block selected. Click a block or search for an address.</p>
         </div> -->
       </section>
-
-      <!-- Legend -->
-      <section class="panel-section" id="legend-panel">
-        <h3 class="section-title">Legend</h3>
-        <div id="legend-content">
-          <!-- JS will inject legend items here -->
-        </div>
-      </section>
     </aside>
 
+    <section id="legend-panel" class="shadow">
+      <h3 class="section-title">Legend</h3>
+      <div id="legend-content">
+        <!-- JS will inject legend items here -->
+      </div>
+    </section>
     <!-- side chart panel -->
     <section id="charts-panel" class="shadow expanded">
-  <button
-    id="toggleChartsBtn"
-    class="charts-toggle-btn"
-    type="button"
-    aria-expanded="true"
-    aria-controls="charts-panel-inner"
-  >
-    Charts
-  </button>
+      <button id="toggleChartsBtn" class="charts-toggle-btn" type="button" aria-expanded="true"
+        aria-controls="charts-panel-inner">
+        Charts
+      </button>
 
-  <div id="charts-panel-inner">
-    <div class="chart-card">
-      <h3 class="chart-title">Selected Block Across Time Periods</h3>
-      <canvas id="metricChart"></canvas>
-    </div>
+      <div id="charts-panel-inner">
+        <div class="chart-card">
+          <h3 class="chart-title">Selected Block Across Time Periods</h3>
+          <div id="metricChart"></div>
+        </div>
 
-    <div class="chart-card">
-      <h3 class="chart-title">Accessibility and Social Vulnerability</h3>
-      <canvas id="scatterChart"></canvas>
-    </div>
-  </div>
-</section>
+        <div class="chart-card">
+          <h3 class="chart-title">Accessibility and Social Vulnerability</h3>
+          <div id="scatterChart"></div>
+        </div>
+      </div>
+    </section>
     <!-- Bottom Charts Panel -->
     <!-- <section id="charts-panel" class="shadow">
       <div class="container-fluid">
@@ -190,8 +189,9 @@
     </section> -->
 
   </div>
-<!-- App Script -->
+  <!-- App Script -->
   <script src="main_script.js"></script>
-  
+
 </body>
+
 </html>

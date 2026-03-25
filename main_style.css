@@ -30,7 +30,7 @@ body {
   width: 340px;
   max-height: calc(100vh - 220px);
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.93);
   border-radius: 12px;
   z-index: 1000;
   overflow-y: auto;
@@ -131,6 +131,19 @@ body {
   color: #6b7280;
 }
 
+#legend-panel {
+  position: absolute;
+  top: calc(1rem + 700px);
+  left: 1rem;
+  width: 340px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 12px;
+  z-index: 950;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(6px);
+}
+
 #legend-content {
   display: flex;
   flex-direction: column;
@@ -159,7 +172,7 @@ body {
   bottom: 1rem;
   width: 460px;
   z-index: 900;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.93);
   border-radius: 12px;
   padding: 1rem 1rem 1rem 1rem;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -219,7 +232,7 @@ body {
 }
 
 .chart-title {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.25rem;
   font-size: 0.95rem;
   font-weight: 700;
   color: #222;
@@ -230,11 +243,27 @@ body {
 }
 
 #metricChart {
-  height: 220px !important;
+  width: 100%;
+  height: 350px;
+  position: relative;
+}
+
+#metricChart svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 #scatterChart {
-  height: 300px !important;
+  width: 100%;
+  height: 350px;
+  position: relative;
+}
+
+#scatterChart svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /* bottom charts */
@@ -415,5 +444,15 @@ body {
   .section-title,
   .chart-title {
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  #legend-panel {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: calc(100% - 1rem);
+    margin: 0.5rem;
   }
 }
