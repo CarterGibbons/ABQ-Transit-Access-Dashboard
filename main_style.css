@@ -23,6 +23,56 @@ body {
   z-index: 1;
 }
 
+
+.modal-content {
+  border-radius: 14px;
+}
+
+.modal-header,
+.modal-footer {
+  border-color: #ececec;
+}
+
+.intro-modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.intro-tabs {
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.intro-tabs .nav-link {
+  border-radius: 10px 10px 0 0;
+  font-weight: 600;
+  color: #495057;
+}
+
+.intro-tabs .nav-link.active {
+  color: #0d6efd;
+}
+
+.intro-tab-content {
+  line-height: 1.55;
+}
+
+.intro-tab-content h2 {
+  margin-bottom: 0.75rem;
+}
+
+.intro-tab-content ul {
+  padding-left: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .intro-tabs .nav-link {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
 #left-overlay-column {
   position: absolute;
   top: 1rem;
@@ -303,15 +353,6 @@ body {
   width: 100%;
   height: 100%;
   display: block;
-}
-
-.modal-content {
-  border-radius: 14px;
-}
-
-.modal-header,
-.modal-footer {
-  border-color: #ececec;
 }
 
 .leaflet-popup-content-wrapper {

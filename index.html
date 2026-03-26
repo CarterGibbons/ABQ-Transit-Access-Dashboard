@@ -24,44 +24,128 @@
 </head>
 
 <body>
-
   <!-- Intro Modal -->
-  <div class="modal fade" id="introModal" tabindex="-1" aria-labelledby="introModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="introModalLabel">ABQ Transit Access Dashboard</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>
-            This interactive tool visualizes census block-level social vulnerability and transit accessibility.
-            Users can explore accessibility metrics through a choropleth map, select individual blocks,
-            and view the corresponding 30-minute accessibility isochrone.
-          </p>
+<div class="modal fade" id="introModal" tabindex="-1" aria-labelledby="introModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="introModalLabel">ABQ Transit Access Dashboard</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-          <h2 class="h6 mt-4">How to Use</h2>
-          <ul>
-            <li>Select a metric from the side panel.</li>
-            <li>Choose a time scenario.</li>
-            <li>Click a census block or search for an address.</li>
-            <li>Switch between choropleth and isochrone views as needed.</li>
-          </ul>
+      <div class="modal-body intro-modal-body">
+        <ul class="nav nav-tabs intro-tabs" id="introTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about-pane"
+              type="button" role="tab" aria-controls="about-pane" aria-selected="true">
+              About
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="howto-tab" data-bs-toggle="tab" data-bs-target="#howto-pane"
+              type="button" role="tab" aria-controls="howto-pane" aria-selected="false">
+              How to Use
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics-pane"
+              type="button" role="tab" aria-controls="metrics-pane" aria-selected="false">
+              Accessibility Metric Explanation
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="methods-tab" data-bs-toggle="tab" data-bs-target="#methods-pane"
+              type="button" role="tab" aria-controls="methods-pane" aria-selected="false">
+              Methods
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="acknowledgments-tab" data-bs-toggle="tab" data-bs-target="#acknowledgments-pane"
+              type="button" role="tab" aria-controls="sources-pane" aria-selected="false">
+              Acknowledgments
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sources-tab" data-bs-toggle="tab" data-bs-target="#sources-pane"
+              type="button" role="tab" aria-controls="sources-pane" aria-selected="false">
+              Data Sources
+            </button>
+          </li>
+        </ul>
 
-          <h2 class="h6 mt-4">Data Sources</h2>
-          <ul>
-            <li>GTFS transit schedules</li>
-            <li>Road network data</li>
-            <li>U.S. Census block and tract data</li>
-            <li>CDC / Census-based social vulnerability measures</li>
-          </ul>
+        <div class="tab-content intro-tab-content pt-3" id="introTabContent">
+          <div class="tab-pane fade show active" id="about-pane" role="tabpanel" aria-labelledby="about-tab" tabindex="0">
+            <h2 class="h6">About This Tool</h2>
+            <p>
+              This interactive dashboard visualizes transit accessibility and social vulnerability at the census block level
+              in Albuquerque. Users can explore how access to key destinations varies across space and time and compare
+              these patterns with neighborhood-level social vulnerability.
+            </p>
+            <p class="mb-0">
+              The tool supports both a block-level data view and a 30-minute travel area view for selected locations.
+            </p>
+          </div>
+
+          <div class="tab-pane fade" id="howto-pane" role="tabpanel" aria-labelledby="howto-tab" tabindex="0">
+            <h2 class="h6">How to Use</h2>
+            <ul class="mb-0">
+              <li>Click census blocks to view values and charts.</li>
+              <li>Switch between <strong>Data View</strong> and <strong>30-Minute Travel Area</strong>.</li>
+              <li>Search for an address to select its corresponding block.</li>
+              <li>Change the metric and time period using the controls on the left.</li>
+            </ul>
+          </div>
+
+          <div class="tab-pane fade" id="metrics-pane" role="tabpanel" aria-labelledby="metrics-tab" tabindex="0">
+            <h2 class="h6">Accessibility Metric Explanation</h2>
+            <ul>
+              <li><strong>SVI:</strong> Indicates relative social vulnerability based on demographic and socioeconomic conditions.</li>
+              <li><strong>Jobs Access:</strong> Jobs reachable within 30 minutes by transit and walking.</li>
+              <li><strong>Healthcare Access:</strong> Healthcare destinations reachable within 30 minutes.</li>
+              <li><strong>School Access:</strong> Schools reachable within 30 minutes.</li>
+              <li><strong>Food Access:</strong> Food-related destinations reachable within 30 minutes.</li>
+            </ul>
+            <p class="mb-0">Higher accessibility values indicate more reachable opportunities within the threshold.</p>
+          </div>
+
+          <div class="tab-pane fade" id="methods-pane" role="tabpanel" aria-labelledby="methods-tab" tabindex="0">
+            <h2 class="h6">Methods</h2>
+            <p>
+              Accessibility is calculated using a 30-minute travel-time threshold that combines walking and scheduled transit travel.
+            </p>
+            <p>
+              For each census block and time period, the analysis identifies which destinations can be reached within that threshold
+              and summarizes reachable opportunities by type.
+            </p>
+            <p class="mb-0">
+              The travel area view displays the corresponding 30-minute isochrone for the selected block and selected time period.
+            </p>
+          </div>
+
+          <div class="tab-pane fade" id="acknowledgments-pane" role="tabpanel" aria-labelledby="acknowledgments-tab" tabindex="0">
+            <h2 class="h6">Master's Project Committee</h2>
+            <ul class="mb-0">
+            </ul>
+          </div>
+
+          <div class="tab-pane fade" id="sources-pane" role="tabpanel" aria-labelledby="sources-tab" tabindex="0">
+            <h2 class="h6">Data Sources</h2>
+            <ul class="mb-0">
+              <li><strong>GTFS:</strong> Transit routes, stops, and schedules.</li>
+              <li><strong>U.S. Census:</strong> Block and tract boundary data.</li>
+              <li><strong>SVI:</strong> Social vulnerability data for contextual comparison.</li>
+              <li><strong>Road Network:</strong> Street network data used to support walking access calculations.</li>
+            </ul>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Open Map</button>
-        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Open Map</button>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Main App Wrapper -->
   <div id="app-wrapper">

@@ -102,7 +102,7 @@ const CONFIG = {
 
   sviBreaks: [0.2, 0.4, 0.6, 0.8, 1.0],
 
-  colors: ["#eff3ff", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
+  colors: ["#ffffff", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
 
   styles: {
     choropleth: {
@@ -375,7 +375,7 @@ function Clearall() {
     appState.addressMarker = null;
   }
 
-   appState.map.setView(CONFIG.map.center, CONFIG.map.zoom);
+  //  appState.map.setView(CONFIG.map.center, CONFIG.map.zoom);
 
   refreshView();
 }
