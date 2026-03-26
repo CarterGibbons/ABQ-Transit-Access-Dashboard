@@ -698,12 +698,12 @@ function updateCharts() {
   // SVI selected: both chart areas show message
   if (appState.selectedMetric === "svi") {
     if (dom.metricChartMessage) {
-      dom.metricChartMessage.textContent = "Change metric to see charts";
+      dom.metricChartMessage.textContent = "Change metric to view charts";
       dom.metricChartMessage.classList.remove("hidden");
     }
 
     if (dom.scatterChartMessage) {
-      dom.scatterChartMessage.textContent = "Change metric to see charts";
+      dom.scatterChartMessage.textContent = "Change metric to view charts";
       dom.scatterChartMessage.classList.remove("hidden");
     }
 
@@ -714,7 +714,7 @@ function updateCharts() {
   // only bar chart gets a message, scatter still renders
   if (!appState.selectedFeature) {
     if (dom.metricChartMessage) {
-      dom.metricChartMessage.textContent = "Select a block to see time period chart";
+      dom.metricChartMessage.textContent = "Select a block to view time period chart";
       dom.metricChartMessage.classList.remove("hidden");
     }
 
