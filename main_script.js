@@ -730,14 +730,23 @@ function updateMetricChart() {
   const metricConfig = CONFIG.metrics[appState.selectedMetric];
   if (metricConfig.type === "static") return;
 
-  const data = CONFIG.timePeriods.map(period => {
-    const field = metricConfig.fields[period.key];
-    return {
-      label: period.label,
-      value: safeNumber(appState.selectedFeature.properties[field]) || 0,
-      key: period.key
-    };
-  });
+  const customBarLabels = {
+  weekday_peak: "Weekday 8AM",
+  weekday_offpeak: "Weekday 2PM",
+  weekday_evening: "Weekday 8PM",
+  weekend_peak: "Weekend 8AM",
+  weekend_offpeak: "Weekend 2PM",
+  weekend_evening: "Weekend 8PM"
+};
+
+const data = CONFIG.timePeriods.map(period => {
+  const field = metricConfig.fields[period.key];
+  return {
+    label: customBarLabels[period.key],
+    value: safeNumber(appState.selectedFeature.properties[field]) || 0,
+    key: period.key
+  };
+});
 
   const margin = { top: 10, right: 10, bottom: 55, left: 55 };
   const width = container.clientWidth || 320;
@@ -770,14 +779,16 @@ function updateMetricChart() {
     .range([innerHeight, 0]);
 
   g.selectAll("rect")
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("x", d => xScale(d.label))
-    .attr("y", d => yScale(d.value))
-    .attr("width", xScale.bandwidth())
-    .attr("height", d => innerHeight - yScale(d.value))
-     .attr("fill", "#3182bd");
+  .data(data)
+  .enter()
+  .append("rect")
+  .attr("x", d => xScale(d.label))
+  .attr("y", d => yScale(d.value))
+  .attr("width", xScale.bandwidth())
+  .attr("height", d => innerHeight - yScale(d.value))
+  .attr("fill", d => d.key === appState.selectedTimePeriod ? "#3182bd" : "#6baed6")
+  .attr("stroke", d => d.key === appState.selectedTimePeriod ? "#111111" : "none")
+  .attr("stroke-width", d => d.key === appState.selectedTimePeriod ? 2 : 0);
 
   g.append("g")
     .attr("transform", `translate(0,${innerHeight})`)
@@ -786,18 +797,18 @@ function updateMetricChart() {
     .style("text-anchor", "end")
     .attr("dx", "-0.6em")
     .attr("dy", "0.15em")
-    .attr("transform", "rotate(-30)");
+    .attr("transform", "rotate(-20)");
 
   g.append("g")
     .call(d3.axisLeft(yScale));
 
   g.append("text")
     .attr("x", innerWidth / 2)
-    .attr("y", innerHeight + 48)
+    .attr("y", innerHeight + 52)
     .attr("text-anchor", "middle")
     .attr("fill", "#222")
     .style("font-size", "12px")
-    .text("Time Scenario");
+    .text("Time Period");
 
   g.append("text")
     .attr("transform", "rotate(-90)")
@@ -866,15 +877,18 @@ function updateScatterChart() {
     .range([0, innerWidth]);
 
   const yScale = d3.scaleLinear()
-    .domain([yExtent[0] - yPadding, yExtent[1] + yPadding])
-    .nice()
-    .range([innerHeight, 0]);
+  .domain([0, yExtent[1] + yPadding])
+  .nice()
+  .range([innerHeight, 0]);
 
   const points = rawPoints.map(d => [xScale(d.x), yScale(d.y)]);
 
-  const hexbin = d3.hexbin()
-    .radius(10)
-    .extent([[0, 0], [innerWidth, innerHeight]]);
+  const hexRadius = 9;
+const hexBottomPad = 12;
+
+const hexbin = d3.hexbin()
+  .radius(hexRadius)
+  .extent([[0, 0], [innerWidth, innerHeight - hexBottomPad]]);
 
   const bins = hexbin(points);
 
@@ -902,16 +916,18 @@ function updateScatterChart() {
       .attr("stroke-width", 1.5);
   }
 
-  g.append("g")
-    .attr("transform", `translate(0,${innerHeight})`)
-    .call(d3.axisBottom(xScale));
+  const xAxisOffset = 12;
+
+g.append("g")
+  .attr("transform", `translate(0,${innerHeight + xAxisOffset})`)
+  .call(d3.axisBottom(xScale));
 
   g.append("g")
     .call(d3.axisLeft(yScale));
 
   g.append("text")
     .attr("x", innerWidth / 2)
-    .attr("y", innerHeight + 48)
+    .attr("y", innerHeight + 40)
     .attr("text-anchor", "middle")
     .attr("fill", "#222")
     .style("font-size", "12px")
@@ -1002,8 +1018,9 @@ function safeNumber(value) {
 
   if (!Number.isFinite(number)) return null;
 
-  // Treat sentinel no-data values as null
+  // SVI "no data" values
   if (number === -999) return null;
+
 
   return number;
 }
