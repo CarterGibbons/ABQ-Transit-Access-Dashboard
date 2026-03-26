@@ -74,14 +74,19 @@
       <aside id="control-panel" class="shadow">
         <div class="panel-header">
           <h2 class="panel-title">ABQ Transit Access Dashboard</h2>
-          <p class="panel-subtitle">Explore vulnerability and accessibility by block.</p>
-        </div>
+      </div>
+      <div id="top-actions">
+        <button id="reopenIntroBtn" class="btn btn-sm btn-outline-primary" type="button">
+          Map Info | Help
+        </button>
+      </div>
+        
 
         <!-- Metric Selection -->
         <section class="panel-section" id="metric-panel">
-          <h3 class="section-title">Metric Selection</h3>
+          <!-- <h3 class="section-title">Metric Selection</h3> -->
           <div class="form-group mb-3">
-            <label for="metricSelect" class="form-label">Choose Metric</label>
+            <label for="metricSelect" class="form-label">Choose Accessibility Metric</label>
             <select id="metricSelect" class="form-select">
               <option value="svi" selected>Social Vulnerability Index (SVI)</option>
               <option value="jobs">Jobs Access</option>
@@ -115,13 +120,13 @@
           <h3 class="section-title">Map View</h3>
           <div class="btn-group w-100" role="group" aria-label="View toggle">
             <input type="radio" class="btn-check" name="viewMode" id="choroplethMode" autocomplete="off" checked>
-            <label class="btn btn-outline-primary" for="choroplethMode">Choropleth</label>
+            <label class="btn btn-outline-primary" for="choroplethMode">Data View</label>
 
             <input type="radio" class="btn-check" name="viewMode" id="isochroneMode" autocomplete="off">
-            <label class="btn btn-outline-primary" for="isochroneMode">Isochrone</label>
+            <label class="btn btn-outline-primary" for="isochroneMode">30-Minute Travel Area</label>
           </div>
           <p id="isochronePromptNote" class="small text-muted mt-2 mb-0 hidden">
-            Click a block or enter an address to see isochrones.
+            Click a block or enter an address to see travel area.
           </p>
         </section>
 
@@ -143,6 +148,7 @@
         </div> -->
         </section>
       </aside>
+      
       <!-- legend -->
       <section id="legend-panel" class="shadow">
         <h3 id="legend-title" class="section-title"></h3>
@@ -158,19 +164,19 @@
         aria-controls="charts-panel-inner">
         Click to Expand/Collapse Charts
       </button>
-    <div id="charts-panel-inner">
-      <div class="chart-card">
-        <h3 class="chart-title">Selected Block Across Time Periods</h3>
-        <div id="metricChartMessage" class="chart-message hidden"></div>
-        <div id="metricChart"></div>
-      </div>
+      <div id="charts-panel-inner">
+        <div class="chart-card">
+          <h3 class="chart-title">Selected Block Across Time Periods</h3>
+          <div id="metricChartMessage" class="chart-message hidden"></div>
+          <div id="metricChart"></div>
+        </div>
 
-      <div class="chart-card">
-        <h3 class="chart-title">Accessibility and Social Vulnerability</h3>
-        <div id="scatterChartMessage" class="chart-message hidden"></div>
-        <div id="scatterChart"></div>
+        <div class="chart-card">
+          <h3 class="chart-title">Accessibility and Social Vulnerability</h3>
+          <div id="scatterChartMessage" class="chart-message hidden"></div>
+          <div id="scatterChart"></div>
+        </div>
       </div>
-    </div>
     </section>
   </div>
   <!-- App Script -->

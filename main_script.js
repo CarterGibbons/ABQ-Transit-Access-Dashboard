@@ -102,7 +102,7 @@ const CONFIG = {
 
   sviBreaks: [0.2, 0.4, 0.6, 0.8, 1.0],
 
-  colors: ["#eff3ff", "#c6dbef", "#9ecae1", "#6baed6",  "#3182bd", "#08519c" ],
+  colors: ["#eff3ff", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
 
   styles: {
     choropleth: {
@@ -137,6 +137,7 @@ const CONFIG = {
 
 const appState = {
   map: null,
+  introModal: null,
   mode: "choropleth",
   selectedMetric: "svi",
   selectedTimePeriod: "weekday_peak",
@@ -148,7 +149,7 @@ const appState = {
   addressMarker: null,
   geocoderControl: null,
   isochroneCache: {},
-  
+
   classification: {
     values: [],
     breaks: []
@@ -167,6 +168,7 @@ const dom = {
   isochroneMode: document.getElementById("isochroneMode"),
   geocoderContainer: document.getElementById("geocoder-container"),
   clearSelectionBtn: document.getElementById("clearSelectionBtn"),
+  reopenIntroBtn: document.getElementById("reopenIntroBtn"),
   selectedBlockContent: document.getElementById("selectedBlockContent"),
   legendTitle: document.getElementById("legend-title"),
   legendPanel: document.getElementById("legend-panel"),
@@ -177,7 +179,7 @@ const dom = {
   isochronePromptNote: document.getElementById("isochronePromptNote"),
   metricChartMessage: document.getElementById("metricChartMessage"),
   scatterChartMessage: document.getElementById("scatterChartMessage")
-  
+
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -210,8 +212,15 @@ function initMap() {
 function initModal() {
   const modalEl = document.getElementById("introModal");
   if (!modalEl || typeof bootstrap === "undefined") return;
-  const modal = new bootstrap.Modal(modalEl);
-  modal.show();
+
+  appState.introModal = new bootstrap.Modal(modalEl);
+  appState.introModal.show();
+
+  modalEl.addEventListener("hidden.bs.modal", () => {
+    if (dom.metricSelect) {
+      dom.metricSelect.focus();
+    }
+  });
 }
 
 function initControls() {
@@ -219,7 +228,13 @@ function initControls() {
     appState.selectedMetric = event.target.value;
     refreshView();
   });
-
+  if (dom.reopenIntroBtn) {
+    dom.reopenIntroBtn.addEventListener("click", () => {
+      if (appState.introModal) {
+        appState.introModal.show();
+      }
+    });
+  }
   dom.timeScenario.addEventListener("change", event => {
     appState.selectedTimePeriod = event.target.value;
     refreshView();
@@ -232,21 +247,21 @@ function initControls() {
   });
 
   dom.isochroneMode.addEventListener("change", () => {
-  if (!dom.isochroneMode.checked) return;
+    if (!dom.isochroneMode.checked) return;
 
-  appState.mode = "isochrone";
-  refreshView();
-});
-
-  dom.clearSelectionBtn.addEventListener("click", returnToChoropleth);
-  
-  if (dom.toggleChartsBtn && dom.chartsPanel) {
-  dom.toggleChartsBtn.addEventListener("click", () => {
-    const isCollapsed = dom.chartsPanel.classList.toggle("collapsed");
-    dom.chartsPanel.classList.toggle("expanded", !isCollapsed);
-    dom.toggleChartsBtn.setAttribute("aria-expanded", String(!isCollapsed));
+    appState.mode = "isochrone";
+    refreshView();
   });
-}
+
+  dom.clearSelectionBtn.addEventListener("click", Clearall);
+
+  if (dom.toggleChartsBtn && dom.chartsPanel) {
+    dom.toggleChartsBtn.addEventListener("click", () => {
+      const isCollapsed = dom.chartsPanel.classList.toggle("collapsed");
+      dom.chartsPanel.classList.toggle("expanded", !isCollapsed);
+      dom.toggleChartsBtn.setAttribute("aria-expanded", String(!isCollapsed));
+    });
+  }
 }
 
 function initGeocoder() {
@@ -331,8 +346,7 @@ function selectBlock(feature, layer = null) {
 
 function returnToChoropleth() {
   appState.mode = "choropleth";
-  appState.selectedBlockId = null;
-  appState.selectedFeature = null;
+
 
   clearIsochrone();
   appState.map.closePopup();
@@ -343,6 +357,26 @@ function returnToChoropleth() {
   }
 
   dom.choroplethMode.checked = true;
+  refreshView();
+}
+
+function Clearall() {
+  appState.selectedBlockId = null
+  appState.selectedFeature = null
+  appState.map.closePopup();
+  refreshView();
+
+
+  clearIsochrone();
+  appState.map.closePopup();
+
+  if (appState.addressMarker) {
+    appState.map.removeLayer(appState.addressMarker);
+    appState.addressMarker = null;
+  }
+
+   appState.map.setView(CONFIG.map.center, CONFIG.map.zoom);
+
   refreshView();
 }
 
@@ -465,11 +499,11 @@ function updateLegend() {
     dom.legendPanel.classList.add("hidden");
     return;
   }
-  
+
   if (dom.legendTitle) {
-  dom.legendTitle.textContent = CONFIG.metrics[appState.selectedMetric].label;
+    dom.legendTitle.textContent = CONFIG.metrics[appState.selectedMetric].label;
   }
-  
+
   dom.legendPanel.classList.remove("hidden");
 
   const values = appState.classification.values;
@@ -536,7 +570,7 @@ function buildSelectedBlockPopupContent(feature) {
   const sviValue = safeNumber(feature.properties[CONFIG.metrics.svi.field]);
   const timeLabel = getTimeLabel(appState.selectedTimePeriod);
 
-  if (appState.mode === "choropleth" && appState.selectedMetric === "svi") {
+  if (appState.selectedMetric === "svi") {
     return `
       <div class="popup-block-info">
         <p><strong>Social Vulnerability Index (SVI):</strong> ${CONFIG.metrics.svi.formatter(sviValue)}</p>
@@ -738,22 +772,22 @@ function updateMetricChart() {
   if (metricConfig.type === "static") return;
 
   const customBarLabels = {
-  weekday_peak: "Weekday 8AM",
-  weekday_offpeak: "Weekday 2PM",
-  weekday_evening: "Weekday 8PM",
-  weekend_peak: "Weekend 8AM",
-  weekend_offpeak: "Weekend 2PM",
-  weekend_evening: "Weekend 8PM"
-};
-
-const data = CONFIG.timePeriods.map(period => {
-  const field = metricConfig.fields[period.key];
-  return {
-    label: customBarLabels[period.key],
-    value: safeNumber(appState.selectedFeature.properties[field]) || 0,
-    key: period.key
+    weekday_peak: "Weekday 8AM",
+    weekday_offpeak: "Weekday 2PM",
+    weekday_evening: "Weekday 8PM",
+    weekend_peak: "Weekend 8AM",
+    weekend_offpeak: "Weekend 2PM",
+    weekend_evening: "Weekend 8PM"
   };
-});
+
+  const data = CONFIG.timePeriods.map(period => {
+    const field = metricConfig.fields[period.key];
+    return {
+      label: customBarLabels[period.key],
+      value: safeNumber(appState.selectedFeature.properties[field]) || 0,
+      key: period.key
+    };
+  });
 
   const margin = { top: 10, right: 10, bottom: 55, left: 55 };
   const width = container.clientWidth || 320;
@@ -786,16 +820,16 @@ const data = CONFIG.timePeriods.map(period => {
     .range([innerHeight, 0]);
 
   g.selectAll("rect")
-  .data(data)
-  .enter()
-  .append("rect")
-  .attr("x", d => xScale(d.label))
-  .attr("y", d => yScale(d.value))
-  .attr("width", xScale.bandwidth())
-  .attr("height", d => innerHeight - yScale(d.value))
-  .attr("fill", d => d.key === appState.selectedTimePeriod ? "#3182bd" : "#6baed6")
-  .attr("stroke", d => d.key === appState.selectedTimePeriod ? "#111111" : "none")
-  .attr("stroke-width", d => d.key === appState.selectedTimePeriod ? 2 : 0);
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", d => xScale(d.label))
+    .attr("y", d => yScale(d.value))
+    .attr("width", xScale.bandwidth())
+    .attr("height", d => innerHeight - yScale(d.value))
+    .attr("fill", d => d.key === appState.selectedTimePeriod ? "#3182bd" : "#6baed6")
+    .attr("stroke", d => d.key === appState.selectedTimePeriod ? "#111111" : "none")
+    .attr("stroke-width", d => d.key === appState.selectedTimePeriod ? 2 : 0);
 
   g.append("g")
     .attr("transform", `translate(0,${innerHeight})`)
@@ -852,9 +886,9 @@ function updateScatterChart() {
 
   const selectedPoint = appState.selectedFeature
     ? {
-        x: safeNumber(appState.selectedFeature.properties.SVI),
-        y: safeNumber(appState.selectedFeature.properties[field])
-      }
+      x: safeNumber(appState.selectedFeature.properties.SVI),
+      y: safeNumber(appState.selectedFeature.properties[field])
+    }
     : null;
 
   const margin = { top: 10, right: 16, bottom: 42, left: 52 };
@@ -884,18 +918,18 @@ function updateScatterChart() {
     .range([0, innerWidth]);
 
   const yScale = d3.scaleLinear()
-  .domain([0, yExtent[1] + yPadding])
-  .nice()
-  .range([innerHeight, 0]);
+    .domain([0, yExtent[1] + yPadding])
+    .nice()
+    .range([innerHeight, 0]);
 
   const points = rawPoints.map(d => [xScale(d.x), yScale(d.y)]);
 
   const hexRadius = 9;
-const hexBottomPad = 12;
+  const hexBottomPad = 12;
 
-const hexbin = d3.hexbin()
-  .radius(hexRadius)
-  .extent([[0, 0], [innerWidth, innerHeight - hexBottomPad]]);
+  const hexbin = d3.hexbin()
+    .radius(hexRadius)
+    .extent([[0, 0], [innerWidth, innerHeight - hexBottomPad]]);
 
   const bins = hexbin(points);
 
@@ -925,9 +959,9 @@ const hexbin = d3.hexbin()
 
   const xAxisOffset = 12;
 
-g.append("g")
-  .attr("transform", `translate(0,${innerHeight + xAxisOffset})`)
-  .call(d3.axisBottom(xScale));
+  g.append("g")
+    .attr("transform", `translate(0,${innerHeight + xAxisOffset})`)
+    .call(d3.axisBottom(xScale));
 
   g.append("g")
     .call(d3.axisLeft(yScale));
@@ -996,10 +1030,10 @@ function updateClassification() {
     try {
       appState.classification.breaks = ss.jenks(nonZeroValues, classCount).slice(1);
       return;
-    } catch (error) {}
+    } catch (error) { }
   }
 
-  
+
 }
 
 function formatLegendRange(min, max) {
