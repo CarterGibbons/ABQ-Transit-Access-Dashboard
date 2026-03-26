@@ -108,7 +108,7 @@ const CONFIG = {
     choropleth: {
       color: "#666666",
       weight: 0.7,
-      fillOpacity: 0.70
+      fillOpacity: 0.75
     },
     outline: {
       color: "#8a8a8a",
@@ -587,7 +587,7 @@ async function renderIsochroneForSelection() {
 
     const bounds = appState.isochroneLayer.getBounds();
     if (bounds.isValid()) {
-      appState.map.fitBounds(bounds, { padding: [60, 60] });
+      appState.map.fitBounds(bounds, { padding: [100, 100] });
     }
   } catch (error) {
     console.error(`Could not render isochrone for ${scenarioKey}`, error);
@@ -649,7 +649,7 @@ function handleGeocodeResult(latlng, label) {
     radius: 6,
     weight: 2,
     color: "#111111",
-    fillColor: "#ffffff",
+    fillColor: "#2563eb",
     fillOpacity: 1
   }).addTo(appState.map);
 
@@ -657,11 +657,7 @@ function handleGeocodeResult(latlng, label) {
 
   selectBlock(containingFeature);
 }
-// old chart update block
-// function updateCharts() {
-//   updateMetricChart();
-//   updateScatterChart();
-// }
+
 
 function updateCharts() {
   const metricContainer = document.getElementById("metricChart");
