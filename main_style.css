@@ -23,11 +23,20 @@ body {
   z-index: 1;
 }
 
-#control-panel {
+#left-overlay-column {
   position: absolute;
   top: 1rem;
   left: 1rem;
   width: 340px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#control-panel {
+  position: relative;
+  width: 100%;
   max-height: calc(100vh - 220px);
   padding: 1rem;
   background: rgba(255, 255, 255, 0.93);
@@ -39,7 +48,7 @@ body {
 }
 
 .panel-header {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .panel-title {
@@ -58,7 +67,7 @@ body {
 
 .panel-section {
   margin-bottom: 1rem;
-  padding-bottom: 0.9rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid #e5e5e5;
 }
 
@@ -132,10 +141,8 @@ body {
 }
 
 #legend-panel {
-  position: absolute;
-  top: calc(1rem + 700px);
-  left: 1rem;
-  width: 340px;
+  position: relative;
+  width: 100%;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.96);
   border-radius: 12px;
@@ -224,11 +231,30 @@ body {
 }
 
 .chart-card {
+  position: relative;
   background: #fff;
   border: 1px solid #e7e7e7;
   border-radius: 10px;
   padding: 0.85rem;
   min-height: 260px;
+}
+
+.chart-message {
+  position: absolute;
+  top: 2.3rem;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  z-index: 2;
 }
 
 .chart-title {
@@ -265,40 +291,6 @@ body {
   height: 100%;
   display: block;
 }
-
-/* bottom charts */
-/* #charts-panel {
-  position: absolute;
-  left: 370px;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 900;
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 12px;
-  padding: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(6px);
-}
-
-.chart-card {
-  background: #fff;
-  border: 1px solid #e7e7e7;
-  border-radius: 10px;
-  padding: 0.85rem;
-  min-height: 240px;
-}
-
-.chart-title {
-  margin: 0 0 0.75rem;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #222;
-}
-
-.chart-card canvas {
-  width: 100% !important;
-  height: 180px !important;
-} */
 
 .modal-content {
   border-radius: 14px;
@@ -346,6 +338,22 @@ body {
 @media (max-width: 1200px) {
   #charts-panel {
     left: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  #left-overlay-column {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: calc(100% - 1rem);
+    margin: 0.5rem;
+  }
+
+  #control-panel,
+  #legend-panel {
+    width: 100%;
+    max-height: none;
   }
 }
 
@@ -430,6 +438,7 @@ body {
 }
 
 @media (max-width: 576px) {
+  #legend-panel,
   #control-panel,
   #charts-panel {
     margin: 0.4rem;

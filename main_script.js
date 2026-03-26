@@ -1,24 +1,6 @@
 // =========================================================
 // Transit Accessibility Web Map
 // =========================================================
-// Assumptions:
-// - Block TopoJSON file: data/blocks.topojson
-// - Block TopoJSON object name: layer
-// - Block ID field: GISJOIN
-// - SVI field: SVI
-// - Accessibility values live in the block properties.
-// - Isochrones are stored separately in data/isochrones/
-//   with one TopoJSON file per time scenario only:
-//     weekday_peak.topojson
-//     weekday_offpeak.topojson
-//     weekday_evening.topojson
-//     weekend_peak.topojson
-//     weekend_offpeak.topojson
-//     weekend_evening.topojson
-// - Each isochrone feature has a GISJOIN property matching the block layer.
-// - Metric selection affects choropleth styling and displayed values,
-//   but NOT which isochrone file is used.
-// =========================================================
 
 const CONFIG = {
   data: {
@@ -118,17 +100,19 @@ const CONFIG = {
     { key: "weekend_evening", label: "Weekend Evening (8 PM)" }
   ],
 
-  colors: ["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
+  sviBreaks: [0.2, 0.4, 0.6, 0.8, 1.0],
+
+  colors: ["#eff3ff", "#c6dbef", "#9ecae1", "#6baed6",  "#3182bd", "#08519c" ],
 
   styles: {
     choropleth: {
       color: "#666666",
       weight: 0.7,
-      fillOpacity: 0.82
+      fillOpacity: 0.70
     },
     outline: {
       color: "#8a8a8a",
-      weight: 0.7,
+      weight: 0.5,
       fillColor: "#ffffff",
       fillOpacity: 0.02
     },
@@ -188,7 +172,10 @@ const dom = {
   legendContent: document.getElementById("legend-content"),
   chartsPanel: document.getElementById("charts-panel"),
   toggleChartsBtn: document.getElementById("toggleChartsBtn"),
-  sviTimeNote: document.getElementById("sviTimeNote")
+  sviTimeNote: document.getElementById("sviTimeNote"),
+  isochronePromptNote: document.getElementById("isochronePromptNote"),
+  metricChartMessage: document.getElementById("metricChartMessage"),
+  scatterChartMessage: document.getElementById("scatterChartMessage")
 
 };
 
@@ -238,17 +225,11 @@ function initControls() {
   });
 
   dom.isochroneMode.addEventListener("change", () => {
-    if (!dom.isochroneMode.checked) return;
+  if (!dom.isochroneMode.checked) return;
 
-    if (!appState.selectedBlockId) {
-      dom.choroplethMode.checked = true;
-      appState.mode = "choropleth";
-      return;
-    }
-
-    appState.mode = "isochrone";
-    refreshView();
-  });
+  appState.mode = "isochrone";
+  refreshView();
+});
 
   dom.clearSelectionBtn.addEventListener("click", returnToChoropleth);
   
@@ -376,31 +357,13 @@ function refreshView() {
   updateLegend();
   updateCharts();
   updateSviTimeNote();
+  updateIsochronePromptNote();
 
   if (appState.selectedFeature) {
     openSelectedBlockPopup(appState.selectedFeature);
   }
 }
 
-// old refresh view
-// function refreshView() {
-//   if (!appState.blockLayer) return;
-
-//   appState.blockLayer.setStyle(styleBlockFeature);
-
-//   if (appState.mode === "choropleth") {
-//     clearIsochrone();
-//   } else {
-//     renderIsochroneForSelection();
-//   }
-
-//   updateLegend();
-//   updateCharts();
-
-//   if (appState.selectedFeature) {
-//     openSelectedBlockPopup(appState.selectedFeature);
-//   }
-// }
 
 function styleBlockFeature(feature) {
   const isSelected = getBlockId(feature) === appState.selectedBlockId;
@@ -432,31 +395,6 @@ function getCurrentMetricValue(feature) {
   const fieldName = metric.fields[appState.selectedTimePeriod];
   return safeNumber(feature.properties[fieldName]);
 }
-// old color for value
-// function getColorForValue(value) {
-//   if (value === null || value === undefined || Number.isNaN(value)) {
-//     return "#d9d9d9";
-//   }
-
-//   const values = appState.blocksGeoJSON.features
-//     .map(getCurrentMetricValue)
-//     .filter(v => v !== null && !Number.isNaN(v))
-//     .sort((a, b) => a - b);
-
-//   if (!values.length) {
-//     return "#d9d9d9";
-//   }
-
-//   const breaks = getQuantileBreaks(values, CONFIG.colors.length);
-
-//   for (let i = 0; i < breaks.length; i += 1) {
-//     if (value <= breaks[i]) {
-//       return CONFIG.colors[i];
-//     }
-//   }
-
-//   return CONFIG.colors[CONFIG.colors.length - 1];
-// }
 
 function getColorForValue(value) {
   if (value === null || value === undefined || Number.isNaN(value)) {
@@ -469,9 +407,24 @@ function getColorForValue(value) {
     return "#d9d9d9";
   }
 
+  // SVI: no special zero class
+  if (appState.selectedMetric === "svi") {
+    for (let i = 0; i < breaks.length; i += 1) {
+      if (value <= breaks[i]) {
+        return CONFIG.colors[i];
+      }
+    }
+    return CONFIG.colors[Math.min(breaks.length - 1, CONFIG.colors.length - 1)];
+  }
+
+  // Other metrics: preserve zero class
+  if (value === 0) {
+    return CONFIG.colors[0];
+  }
+
   for (let i = 0; i < breaks.length; i += 1) {
     if (value <= breaks[i]) {
-      return CONFIG.colors[i];
+      return CONFIG.colors[i + 1];
     }
   }
 
@@ -488,6 +441,16 @@ function updateSviTimeNote() {
   }
 }
 
+function updateIsochronePromptNote() {
+  if (!dom.isochronePromptNote) return;
+
+  if (appState.mode === "isochrone" && !appState.selectedBlockId) {
+    dom.isochronePromptNote.classList.remove("hidden");
+  } else {
+    dom.isochronePromptNote.classList.add("hidden");
+  }
+}
+
 function updateLegend() {
   if (!dom.legendPanel || !dom.legendContent) return;
 
@@ -499,21 +462,54 @@ function updateLegend() {
   dom.legendPanel.classList.remove("hidden");
 
   const values = appState.classification.values;
+  const breaks = appState.classification.breaks;
 
+  if (!breaks.length) {
+    dom.legendContent.innerHTML = `<p class="mb-0 text-muted">No values available.</p>`;
+    return;
+  }
+
+  const legendItems = [];
+
+  // SVI: fixed equal-interval legend, no zero class
+  if (appState.selectedMetric === "svi") {
+    breaks.forEach((breakValue, index) => {
+      const minValue = index === 0 ? 0.0 : breaks[index - 1];
+
+      legendItems.push(`
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:${CONFIG.colors[index]};"></span>
+          <span>${formatLegendRange(minValue, breakValue)}</span>
+        </div>
+      `);
+    });
+
+    dom.legendContent.innerHTML = legendItems.join("");
+    return;
+  }
+
+  // Other metrics: preserve zero class
   if (!values.length) {
     dom.legendContent.innerHTML = `<p class="mb-0 text-muted">No values available.</p>`;
     return;
   }
 
-  const breaks = appState.classification.breaks;
-  const legendItems = breaks.map((breakValue, index) => {
+  legendItems.push(`
+    <div class="legend-item">
+      <span class="legend-swatch" style="background:${CONFIG.colors[0]};"></span>
+      <span>0</span>
+    </div>
+  `);
+
+  breaks.forEach((breakValue, index) => {
     const minValue = index === 0 ? values[0] : breaks[index - 1];
-    return `
+
+    legendItems.push(`
       <div class="legend-item">
-        <span class="legend-swatch" style="background:${CONFIG.colors[index]};"></span>
+        <span class="legend-swatch" style="background:${CONFIG.colors[index + 1]};"></span>
         <span>${formatLegendRange(minValue, breakValue)}</span>
       </div>
-    `;
+    `);
   });
 
   dom.legendContent.innerHTML = legendItems.join("");
@@ -671,18 +667,51 @@ function updateCharts() {
   const metricContainer = document.getElementById("metricChart");
   const scatterContainer = document.getElementById("scatterChart");
 
+  if (metricContainer) {
+    metricContainer.innerHTML = "";
+  }
+
+  if (scatterContainer) {
+    scatterContainer.innerHTML = "";
+  }
+
+  appState.charts.metricChart = null;
+  appState.charts.scatterChart = null;
+
+  if (dom.metricChartMessage) {
+    dom.metricChartMessage.classList.add("hidden");
+    dom.metricChartMessage.textContent = "";
+  }
+
+  if (dom.scatterChartMessage) {
+    dom.scatterChartMessage.classList.add("hidden");
+    dom.scatterChartMessage.textContent = "";
+  }
+
+  // SVI selected: both chart areas show message
   if (appState.selectedMetric === "svi") {
-    if (metricContainer) {
-      metricContainer.innerHTML = "";
+    if (dom.metricChartMessage) {
+      dom.metricChartMessage.textContent = "Change metric to see charts";
+      dom.metricChartMessage.classList.remove("hidden");
     }
 
-    if (scatterContainer) {
-      scatterContainer.innerHTML = "";
+    if (dom.scatterChartMessage) {
+      dom.scatterChartMessage.textContent = "Change metric to see charts";
+      dom.scatterChartMessage.classList.remove("hidden");
     }
 
-    appState.charts.metricChart = null;
-    appState.charts.scatterChart = null;
+    return;
+  }
 
+  // Non-SVI metric but no block selected:
+  // only bar chart gets a message, scatter still renders
+  if (!appState.selectedFeature) {
+    if (dom.metricChartMessage) {
+      dom.metricChartMessage.textContent = "Select a block to see time period chart";
+      dom.metricChartMessage.classList.remove("hidden");
+    }
+
+    updateScatterChart();
     return;
   }
 
@@ -898,38 +927,63 @@ function updateScatterChart() {
     .text(metricConfig.label);
 }
 
-function getQuantileBreaks(sortedValues, classCount) {
-  const breaks = [];
-  if (!sortedValues.length) return breaks;
+// function getQuantileBreaks(sortedValues, classCount) {
+//   const breaks = [];
+//   if (!sortedValues.length) return breaks;
 
-  for (let i = 1; i <= classCount; i += 1) {
-    const index = Math.min(
-      sortedValues.length - 1,
-      Math.floor((i / classCount) * sortedValues.length) - 1
-    );
-    breaks.push(sortedValues[Math.max(index, 0)]);
-  }
+//   for (let i = 1; i <= classCount; i += 1) {
+//     const index = Math.min(
+//       sortedValues.length - 1,
+//       Math.floor((i / classCount) * sortedValues.length) - 1
+//     );
+//     breaks.push(sortedValues[Math.max(index, 0)]);
+//   }
 
-  return breaks;
-}
+//   return breaks;
+// }
 
 function updateClassification() {
   if (!appState.blocksGeoJSON) return;
 
-  const values = appState.blocksGeoJSON.features
+  const allValues = appState.blocksGeoJSON.features
     .map(getCurrentMetricValue)
     .filter(v => v !== null && !Number.isNaN(v))
     .sort((a, b) => a - b);
 
-  appState.classification.values = values;
-  appState.classification.breaks = values.length
-    ? getQuantileBreaks(values, CONFIG.colors.length)
-    : [];
+  // SVI: fixed equal-interval classes, no separate zero class
+  if (appState.selectedMetric === "svi") {
+    appState.classification.values = allValues;
+    appState.classification.breaks = [0.2, 0.4, 0.6, 0.8, 1.0];
+    return;
+  }
+
+  // Other metrics: keep zero as its own class
+  const nonZeroValues = allValues.filter(v => v > 0).sort((a, b) => a - b);
+
+  appState.classification.values = nonZeroValues;
+
+  if (!nonZeroValues.length) {
+    appState.classification.breaks = [];
+    return;
+  }
+
+  const classCount = CONFIG.colors.length - 1; // reserve first color for zero
+
+  if (typeof ss !== "undefined" && nonZeroValues.length >= classCount) {
+    try {
+      appState.classification.breaks = ss.jenks(nonZeroValues, classCount).slice(1);
+      return;
+    } catch (error) {}
+  }
+
+  
 }
 
 function formatLegendRange(min, max) {
   if (min === null || max === null) return "No data";
-  return `${formatNumber(min, 0)} – ${formatNumber(max, 0)}`;
+
+  const decimals = appState.selectedMetric === "svi" ? 1 : 0;
+  return `${formatNumber(min, decimals)} – ${formatNumber(max, decimals)}`;
 }
 
 function getBlockId(feature) {
