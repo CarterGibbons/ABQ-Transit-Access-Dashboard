@@ -168,6 +168,7 @@ const dom = {
   geocoderContainer: document.getElementById("geocoder-container"),
   clearSelectionBtn: document.getElementById("clearSelectionBtn"),
   selectedBlockContent: document.getElementById("selectedBlockContent"),
+  legendTitle: document.getElementById("legend-title"),
   legendPanel: document.getElementById("legend-panel"),
   legendContent: document.getElementById("legend-content"),
   chartsPanel: document.getElementById("charts-panel"),
@@ -176,7 +177,7 @@ const dom = {
   isochronePromptNote: document.getElementById("isochronePromptNote"),
   metricChartMessage: document.getElementById("metricChartMessage"),
   scatterChartMessage: document.getElementById("scatterChartMessage")
-
+  
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -198,6 +199,12 @@ function initMap() {
   });
 
   L.tileLayer(CONFIG.map.tileUrl, CONFIG.map.tileOptions).addTo(appState.map);
+
+  L.control.scale({
+    position: "bottomleft",
+    imperial: true,
+    metric: true
+  }).addTo(appState.map);
 }
 
 function initModal() {
@@ -314,7 +321,7 @@ function selectBlock(feature, layer = null) {
   if (layer) {
     const bounds = layer.getBounds();
     if (bounds.isValid()) {
-      appState.map.panTo(bounds.getCenter());
+      // appState.map.panTo(bounds.getCenter());
     }
   }
 
@@ -458,7 +465,11 @@ function updateLegend() {
     dom.legendPanel.classList.add("hidden");
     return;
   }
-
+  
+  if (dom.legendTitle) {
+  dom.legendTitle.textContent = CONFIG.metrics[appState.selectedMetric].label;
+  }
+  
   dom.legendPanel.classList.remove("hidden");
 
   const values = appState.classification.values;
@@ -535,9 +546,9 @@ function buildSelectedBlockPopupContent(feature) {
 
   return `
     <div class="popup-block-info">
+      <p><strong>Time Period:</strong> ${timeLabel}</p>
       <p><strong>Metric:</strong> ${metricConfig.label}</p>
-      <p><strong>Time Scenario:</strong> ${timeLabel}</p>
-      <p><strong>Accessibility Value:</strong> ${metricConfig.formatter(metricValue)}</p>
+      <p><strong>Opportunities within 30-minutes:</strong> ${metricConfig.formatter(metricValue)}</p>
       <p><strong>Social Vulnerability Index (SVI):</strong> ${CONFIG.metrics.svi.formatter(sviValue)}</p>
     </div>
   `;
@@ -587,7 +598,7 @@ async function renderIsochroneForSelection() {
 
     const bounds = appState.isochroneLayer.getBounds();
     if (bounds.isValid()) {
-      appState.map.fitBounds(bounds, { padding: [100, 100] });
+      appState.map.fitBounds(bounds, { padding: [60, 60] });
     }
   } catch (error) {
     console.error(`Could not render isochrone for ${scenarioKey}`, error);

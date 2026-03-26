@@ -142,7 +142,7 @@ body {
 
 #legend-panel {
   position: relative;
-  width: 100%;
+  width: max-content;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.96);
   border-radius: 12px;
@@ -308,7 +308,7 @@ body {
 .leaflet-popup-content {
   margin: 0.85rem 1rem;
   font-size: 0.9rem;
-  line-height: 1.45;
+  line-height: 1;
 }
 
 .leaflet-control-zoom {
