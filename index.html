@@ -60,9 +60,9 @@
             </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="acknowledgments-tab" data-bs-toggle="tab" data-bs-target="#acknowledgments-pane"
+            <button class="nav-link" id="acknowledgements-tab" data-bs-toggle="tab" data-bs-target="#acknowledgements-pane"
               type="button" role="tab" aria-controls="sources-pane" aria-selected="false">
-              Acknowledgments
+              Acknowledgements
             </button>
           </li>
           <li class="nav-item" role="presentation">
@@ -78,11 +78,11 @@
             <h2 class="h6">About This Tool</h2>
             <p>
               This interactive dashboard visualizes transit accessibility and social vulnerability at the census block level
-              in Albuquerque. Users can explore how access to key destinations varies across space and time and compare
+              in Albuquerque, New Mexico. Users can explore how access to key destinations varies across space and time and compare
               these patterns with neighborhood-level social vulnerability.
             </p>
             <p class="mb-0">
-              The tool supports both a block-level data view and a 30-minute travel area view for selected locations.
+              This tool visualizes the Albuquerque transit system <strong>before</strong> the 2025 ABQ RIDE Forward Network Plan changes. All data is for reference only. Accuracy is not guaranteed
             </p>
           </div>
 
@@ -97,16 +97,45 @@
           </div>
 
           <div class="tab-pane fade" id="metrics-pane" role="tabpanel" aria-labelledby="metrics-tab" tabindex="0">
-            <h2 class="h6">Accessibility Metric Explanation</h2>
-            <ul>
-              <li><strong>SVI:</strong> Indicates relative social vulnerability based on demographic and socioeconomic conditions.</li>
-              <li><strong>Jobs Access:</strong> Jobs reachable within 30 minutes by transit and walking.</li>
-              <li><strong>Healthcare Access:</strong> Healthcare destinations reachable within 30 minutes.</li>
-              <li><strong>School Access:</strong> Schools reachable within 30 minutes.</li>
-              <li><strong>Food Access:</strong> Food-related destinations reachable within 30 minutes.</li>
-            </ul>
-            <p class="mb-0">Higher accessibility values indicate more reachable opportunities within the threshold.</p>
-          </div>
+  <h2 class="h6 mb-3">Accessibility Metric Explanation</h2>
+
+  <div class="metric-section mb-4">
+    <p>
+      The Social Vulnerability Index (SVI), developed by the Centers for Disease Control and Prevention (CDC),
+      indicates the relative level of social vulnerability based on demographic and socioeconomic conditions.
+    </p>
+    <p class="mb-0">
+      SVI is measured on a <strong>0–1 scale</strong>, where <strong>0</strong> indicates
+      <strong>lower vulnerability</strong> and <strong>1</strong> indicates <strong>higher vulnerability</strong>.
+    </p>
+  </div>
+
+  <div class="metric-section">
+    <h3 class="h6 mb-2">Accessibility Metrics</h3>
+    <ul class="metric-list">
+      <li>
+        <strong>Jobs Access:</strong>
+        Employment opportunities reachable within 30 minutes by transit and walking.
+      </li>
+      <li>
+        <strong>Healthcare Access:</strong>
+        Healthcare destinations certified to provide Medicaid-approved care reachable within 30 minutes by transit and walking.
+      </li>
+      <li>
+        <strong>School Access:</strong>
+        APS public and charter schools reachable within 30 minutes by transit and walking.
+      </li>
+      <li>
+        <strong>Food Access:</strong>
+        Food-related destinations that accept SNAP benefits, excluding convenience stores, reachable within 30 minutes by transit and walking.
+      </li>
+    </ul>
+
+    <p class="mb-0">
+      Higher accessibility values indicate a greater number of reachable opportunities within the 30-minute threshold.
+    </p>
+  </div>
+</div>
 
           <div class="tab-pane fade" id="methods-pane" role="tabpanel" aria-labelledby="methods-tab" tabindex="0">
             <h2 class="h6">Methods</h2>
@@ -122,8 +151,8 @@
             </p>
           </div>
 
-          <div class="tab-pane fade" id="acknowledgments-pane" role="tabpanel" aria-labelledby="acknowledgments-tab" tabindex="0">
-            <h2 class="h6">Master's Project Committee</h2>
+          <div class="tab-pane fade" id="acknowledgements-pane" role="tabpanel" aria-labelledby="acknowledgements-tab" tabindex="0">
+            <h2 class="h6">This project was completed to satisfy requirements for the Master of Science degree in Geography and Environmental Studies at the University of New Mexico</h2>
             <ul class="mb-0">
             </ul>
           </div>
@@ -210,7 +239,7 @@
             <label class="btn btn-outline-primary" for="isochroneMode">30-Minute Travel Area</label>
           </div>
           <p id="isochronePromptNote" class="small text-muted mt-2 mb-0 hidden">
-            Click a block or enter an address to see travel area.
+            Select a block or enter an address to see travel area.
           </p>
         </section>
 
