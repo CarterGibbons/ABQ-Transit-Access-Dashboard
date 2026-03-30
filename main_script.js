@@ -101,7 +101,7 @@ const CONFIG = {
   ],
 
   sviBreaks: [0.2, 0.4, 0.6, 0.8, 1.0],
-
+  sviColors:["#ffffb2", "#fecc5c","#fd8d3c", "#f03b20", "#bd0026"],
   colors: ["#ffffff", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
 
   styles: {
@@ -452,10 +452,10 @@ function getColorForValue(value) {
   if (appState.selectedMetric === "svi") {
     for (let i = 0; i < breaks.length; i += 1) {
       if (value <= breaks[i]) {
-        return CONFIG.colors[i];
+        return CONFIG.sviColors[i];
       }
     }
-    return CONFIG.colors[Math.min(breaks.length - 1, CONFIG.colors.length - 1)];
+    return CONFIG.sviColors[Math.min(breaks.length - 1, CONFIG.sviColors.length - 1)];
   }
 
   // Other metrics: preserve zero class
@@ -523,7 +523,7 @@ function updateLegend() {
 
       legendItems.push(`
         <div class="legend-item">
-          <span class="legend-swatch" style="background:${CONFIG.colors[index]};"></span>
+          <span class="legend-swatch" style="background:${CONFIG.sviColors[index]};"></span>
           <span>${formatLegendRange(minValue, breakValue)}</span>
         </div>
       `);
