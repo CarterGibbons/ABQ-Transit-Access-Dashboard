@@ -34,140 +34,189 @@
       </div>
 
       <div class="modal-body intro-modal-body">
-        <ul class="nav nav-tabs intro-tabs" id="introTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about-pane"
-              type="button" role="tab" aria-controls="about-pane" aria-selected="true">
-              About
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="howto-tab" data-bs-toggle="tab" data-bs-target="#howto-pane"
-              type="button" role="tab" aria-controls="howto-pane" aria-selected="false">
-              How to Use
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics-pane"
-              type="button" role="tab" aria-controls="metrics-pane" aria-selected="false">
-              Accessibility Metric Explanation
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="methods-tab" data-bs-toggle="tab" data-bs-target="#methods-pane"
-              type="button" role="tab" aria-controls="methods-pane" aria-selected="false">
-              Methods
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="acknowledgements-tab" data-bs-toggle="tab" data-bs-target="#acknowledgements-pane"
-              type="button" role="tab" aria-controls="sources-pane" aria-selected="false">
-              Acknowledgements
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="sources-tab" data-bs-toggle="tab" data-bs-target="#sources-pane"
-              type="button" role="tab" aria-controls="sources-pane" aria-selected="false">
-              Data Sources
-            </button>
-          </li>
+  <ul class="nav nav-tabs intro-tabs" id="introTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about-pane"
+        type="button" role="tab" aria-controls="about-pane" aria-selected="true">
+        About
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="howto-tab" data-bs-toggle="tab" data-bs-target="#howto-pane"
+        type="button" role="tab" aria-controls="howto-pane" aria-selected="false">
+        How to Use
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics-pane"
+        type="button" role="tab" aria-controls="metrics-pane" aria-selected="false">
+        Accessibility Metric Explanation
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="methods-tab" data-bs-toggle="tab" data-bs-target="#methods-pane"
+        type="button" role="tab" aria-controls="methods-pane" aria-selected="false">
+        Methods
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="acknowledgements-tab" data-bs-toggle="tab" data-bs-target="#acknowledgements-pane"
+        type="button" role="tab" aria-controls="acknowledgements-pane" aria-selected="false">
+        Acknowledgements
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="sources-tab" data-bs-toggle="tab" data-bs-target="#sources-pane"
+        type="button" role="tab" aria-controls="sources-pane" aria-selected="false">
+        Data Sources
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content intro-tab-content pt-3" id="introTabContent">
+
+    <div class="tab-pane fade show active" id="about-pane" role="tabpanel" aria-labelledby="about-tab" tabindex="0">
+      <h2 class="h5 intro-pane-title">About This Tool</h2>
+
+      <div class="intro-pane-section">
+        <p>
+          This interactive dashboard visualizes transit accessibility and social vulnerability at the census block level
+          in Albuquerque, New Mexico. Users can explore how access to key destinations varies across space and time and
+          compare these patterns with neighborhood-level social vulnerability.
+        </p>
+      </div>
+
+      <div class="intro-pane-section">
+        <p class="mb-0">
+          This tool visualizes the Albuquerque transit system <strong>before</strong> the 2025 ABQ RIDE Forward Network
+          Plan changes. All data is for reference only, and accuracy is not guaranteed.
+        </p>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="howto-pane" role="tabpanel" aria-labelledby="howto-tab" tabindex="0">
+      <h2 class="h5 intro-pane-title">How to Use</h2>
+
+      <div class="intro-pane-section">
+        <h3 class="h6">Getting Started</h3>
+        <p>
+          Start by choosing an accessibility metric and a time period using the controls on the left side of the map.
+        </p>
+        <p class="mb-0">
+          The map will update to show how access changes depending on what you choose.
+        </p>
+      </div>
+
+      <div class="intro-pane-section">
+        <h3 class="h6">Reading the Map</h3>
+        <p>
+          The map uses color shading to show differences between places. In general,
+          <strong>darker areas mean higher values</strong>, while
+          <strong>lighter areas mean lower values</strong>.
+        </p>
+        <p class="mb-0">
+          For accessibility maps, darker areas usually indicate that more opportunities can be reached within 30 minutes.
+          For the Social Vulnerability Index (SVI), darker areas indicate higher vulnerability.
+        </p>
+      </div>
+
+      <div class="intro-pane-section">
+        <h3 class="h6">Exploring a Location</h3>
+        <ul class="intro-pane-list mb-0">
+          <li>Click a census block to view its values and charts.</li>
+          <li>Switch between <strong>Data View</strong> and <strong>30-Minute Travel Area</strong>.</li>
+          <li>Search for an address to select its corresponding block automatically.</li>
         </ul>
+      </div>
 
-        <div class="tab-content intro-tab-content pt-3" id="introTabContent">
-          <div class="tab-pane fade show active" id="about-pane" role="tabpanel" aria-labelledby="about-tab" tabindex="0">
-            <h2 class="h6">About This Tool</h2>
-            <p>
-              This interactive dashboard visualizes transit accessibility and social vulnerability at the census block level
-              in Albuquerque, New Mexico. Users can explore how access to key destinations varies across space and time and compare
-              these patterns with neighborhood-level social vulnerability.
-            </p>
-            <p class="mb-0">
-              This tool visualizes the Albuquerque transit system <strong>before</strong> the 2025 ABQ RIDE Forward Network Plan changes. All data is for reference only. Accuracy is not guaranteed
-            </p>
-          </div>
+      <div class="intro-pane-section">
+        <h3 class="h6">Tutorial Video</h3>
+        <p class="mb-2">Watch a short walkthrough of the tool and its features:</p>
+        <p class="mb-0">
+          <a href="#" target="_blank" rel="noopener noreferrer">View tutorial video</a>
+        </p>
+      </div>
+    </div>
 
-          <div class="tab-pane fade" id="howto-pane" role="tabpanel" aria-labelledby="howto-tab" tabindex="0">
-            <h2 class="h6">How to Use</h2>
-            <ul class="mb-0">
-              <li>Click census blocks to view values and charts.</li>
-              <li>Switch between <strong>Data View</strong> and <strong>30-Minute Travel Area</strong>.</li>
-              <li>Search for an address to select its corresponding block.</li>
-              <li>Change the metric and time period using the controls on the left.</li>
-            </ul>
-          </div>
+    <div class="tab-pane fade" id="metrics-pane" role="tabpanel" aria-labelledby="metrics-tab" tabindex="0">
+      <h2 class="h5 intro-pane-title">Accessibility Metric Explanation</h2>
 
-          <div class="tab-pane fade" id="metrics-pane" role="tabpanel" aria-labelledby="metrics-tab" tabindex="0">
-  <h2 class="h6 mb-3">Accessibility Metric Explanation</h2>
+      <div class="intro-pane-section">
+        <h3 class="h6">Social Vulnerability Index (SVI)</h3>
+        <p>
+          The Social Vulnerability Index (SVI), developed by the Centers for Disease Control and Prevention (CDC),
+          indicates the relative level of social vulnerability based on demographic and socioeconomic conditions.
+        </p>
+        <p class="mb-0">
+          SVI is measured on a <strong>0–1 scale</strong>, where <strong>0</strong> indicates
+          <strong>lower vulnerability</strong> and <strong>1</strong> indicates <strong>higher vulnerability</strong>.
+        </p>
+      </div>
 
-  <div class="metric-section mb-4">
-    <p>
-      The Social Vulnerability Index (SVI), developed by the Centers for Disease Control and Prevention (CDC),
-      indicates the relative level of social vulnerability based on demographic and socioeconomic conditions.
-    </p>
-    <p class="mb-0">
-      SVI is measured on a <strong>0–1 scale</strong>, where <strong>0</strong> indicates
-      <strong>lower vulnerability</strong> and <strong>1</strong> indicates <strong>higher vulnerability</strong>.
-    </p>
-  </div>
+      <div class="intro-pane-section">
+        <h3 class="h6">Accessibility Metrics</h3>
+        <ul class="intro-pane-list">
+          <li><strong>Jobs Access:</strong> Employment opportunities reachable within 30 minutes by transit and walking.</li>
+          <li><strong>Healthcare Access:</strong> Healthcare destinations certified to provide Medicaid-approved care reachable within 30 minutes by transit and walking.</li>
+          <li><strong>School Access:</strong> APS public and charter schools reachable within 30 minutes by transit and walking.</li>
+          <li><strong>Food Access:</strong> Food-related destinations that accept SNAP benefits, excluding convenience stores, reachable within 30 minutes by transit and walking.</li>
+        </ul>
+        <p class="mb-0">
+          Higher accessibility values indicate a greater number of reachable opportunities within the 30-minute threshold.
+        </p>
+      </div>
+    </div>
 
-  <div class="metric-section">
-    <h3 class="h6 mb-2">Accessibility Metrics</h3>
-    <ul class="metric-list">
-      <li>
-        <strong>Jobs Access:</strong>
-        Employment opportunities reachable within 30 minutes by transit and walking.
-      </li>
-      <li>
-        <strong>Healthcare Access:</strong>
-        Healthcare destinations certified to provide Medicaid-approved care reachable within 30 minutes by transit and walking.
-      </li>
-      <li>
-        <strong>School Access:</strong>
-        APS public and charter schools reachable within 30 minutes by transit and walking.
-      </li>
-      <li>
-        <strong>Food Access:</strong>
-        Food-related destinations that accept SNAP benefits, excluding convenience stores, reachable within 30 minutes by transit and walking.
-      </li>
-    </ul>
+    <div class="tab-pane fade" id="methods-pane" role="tabpanel" aria-labelledby="methods-tab" tabindex="0">
+      <h2 class="h5 intro-pane-title">Methods</h2>
 
-    <p class="mb-0">
-      Higher accessibility values indicate a greater number of reachable opportunities within the 30-minute threshold.
-    </p>
+      <div class="intro-pane-section">
+        <p>
+          Accessibility is calculated using a 30-minute travel-time threshold that combines walking and scheduled transit travel.
+        </p>
+        <p>
+          For each census block and time period, the analysis identifies which destinations can be reached within that threshold
+          and summarizes reachable opportunities by type.
+        </p>
+        <p class="mb-0">
+          The travel area view displays the corresponding 30-minute isochrone for the selected block and selected time period.
+        </p>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="acknowledgements-pane" role="tabpanel" aria-labelledby="acknowledgements-tab" tabindex="0">
+      <h2 class="h5 intro-pane-title">Acknowledgements</h2>
+
+      <div class="intro-pane-section">
+        <p>
+          This project was completed to satisfy requirements for the Master of Science degree in Geography and Environmental Studies
+          at the University of New Mexico.
+        </p>
+      </div>
+
+      <div class="intro-pane-section">
+        <p class="mb-0">
+          This tool would not have been possible without the input and advice of my graduate committee:
+          Dr. Liping Yang, Dr. Lisa Losada-Rojas, and Dr. Su Zhang.
+        </p>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="sources-pane" role="tabpanel" aria-labelledby="sources-tab" tabindex="0">
+      <h2 class="h5 intro-pane-title">Data Sources</h2>
+
+      <div class="intro-pane-section">
+        <ul class="intro-pane-list mb-0">
+          <li><strong>GTFS:</strong> Transit routes, stops, and schedules.</li>
+          <li><strong>U.S. Census:</strong> Block and tract boundary data.</li>
+          <li><strong>SVI:</strong> Social vulnerability data for contextual comparison.</li>
+          <li><strong>Road Network:</strong> Street network data used to support walking access calculations.</li>
+        </ul>
+      </div>
+    </div>
+
   </div>
 </div>
-
-          <div class="tab-pane fade" id="methods-pane" role="tabpanel" aria-labelledby="methods-tab" tabindex="0">
-            <h2 class="h6">Methods</h2>
-            <p>
-              Accessibility is calculated using a 30-minute travel-time threshold that combines walking and scheduled transit travel.
-            </p>
-            <p>
-              For each census block and time period, the analysis identifies which destinations can be reached within that threshold
-              and summarizes reachable opportunities by type.
-            </p>
-            <p class="mb-0">
-              The travel area view displays the corresponding 30-minute isochrone for the selected block and selected time period.
-            </p>
-          </div>
-
-          <div class="tab-pane fade" id="acknowledgements-pane" role="tabpanel" aria-labelledby="acknowledgements-tab" tabindex="0">
-            <h2 class="h6">This project was completed to satisfy requirements for the Master of Science degree in Geography and Environmental Studies at the University of New Mexico</h2>
-            <ul class="mb-0">
-            </ul>
-          </div>
-
-          <div class="tab-pane fade" id="sources-pane" role="tabpanel" aria-labelledby="sources-tab" tabindex="0">
-            <h2 class="h6">Data Sources</h2>
-            <ul class="mb-0">
-              <li><strong>GTFS:</strong> Transit routes, stops, and schedules.</li>
-              <li><strong>U.S. Census:</strong> Block and tract boundary data.</li>
-              <li><strong>SVI:</strong> Social vulnerability data for contextual comparison.</li>
-              <li><strong>Road Network:</strong> Street network data used to support walking access calculations.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Open Map</button>

@@ -23,9 +23,10 @@ body {
   z-index: 1;
 }
 
-
+/* modal */
 .modal-content {
   border-radius: 14px;
+  overflow: hidden;
 }
 
 .modal-header,
@@ -34,45 +35,99 @@ body {
 }
 
 .intro-modal-body {
-  max-height: 70vh;
+  max-height: 75vh;
   overflow-y: auto;
+  padding: 1.25rem 1.25rem 1rem;
 }
 
 .intro-tabs {
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: 0.35rem;
   border-bottom: 1px solid #dee2e6;
+  margin-bottom: 0.25rem;
 }
 
 .intro-tabs .nav-link {
+  border: 1px solid transparent;
   border-radius: 10px 10px 0 0;
   font-weight: 600;
   color: #495057;
+  padding: 0.65rem 0.9rem;
+}
+
+.intro-tabs .nav-link:hover,
+.intro-tabs .nav-link:focus {
+  color: #0d6efd;
+  background: #f8f9fa;
+  border-color: #dee2e6 #dee2e6 transparent;
 }
 
 .intro-tabs .nav-link.active {
   color: #0d6efd;
+  background: #ffffff;
+  border-color: #dee2e6 #dee2e6 #ffffff;
 }
 
 .intro-tab-content {
-  line-height: 1.55;
+  line-height: 1.6;
+  color: #2f2f2f;
 }
 
-.intro-tab-content h2 {
+.intro-pane-title {
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.intro-pane-section {
+  padding: 0.95rem 0;
+  border-top: 1px solid #e9ecef;
+}
+
+.intro-pane-section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.intro-pane-section h3 {
+  margin-bottom: 0.55rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.intro-pane-section p {
   margin-bottom: 0.75rem;
 }
 
-.intro-tab-content ul {
+.intro-pane-section p:last-child {
+  margin-bottom: 0;
+}
+
+.intro-pane-list {
   padding-left: 1.2rem;
+  margin-bottom: 0.9rem;
 }
 
-@media (max-width: 768px) {
-  .intro-tabs .nav-link {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-  }
+.intro-pane-list li {
+  margin-bottom: 0.65rem;
+  line-height: 1.55;
 }
 
+.intro-pane-list li:last-child {
+  margin-bottom: 0;
+}
+
+.intro-tab-content a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.intro-tab-content a:hover,
+.intro-tab-content a:focus {
+  text-decoration: underline;
+}
+
+/* left overlay */
 #left-overlay-column {
   position: absolute;
   top: 1rem;
@@ -97,6 +152,7 @@ body {
   border-color: #0d6efd;
 }
 
+/* control panel */
 #control-panel {
   position: relative;
   width: 100%;
@@ -159,6 +215,7 @@ body {
   border-radius: 10px;
 }
 
+/* geocoder */
 #geocoder-container {
   position: relative;
   z-index: 1100;
@@ -189,6 +246,7 @@ body {
   border-radius: 0 0 8px 8px;
 }
 
+/* selected block panel */
 #selectedBlockContent {
   font-size: 0.9rem;
   color: #333;
@@ -203,6 +261,7 @@ body {
   color: #6b7280;
 }
 
+/* legend */
 #legend-panel {
   position: relative;
   width: max-content;
@@ -234,7 +293,8 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
-/* side charts */
+
+/* charts panel */
 #charts-panel {
   position: absolute;
   top: 1rem;
@@ -244,7 +304,7 @@ body {
   z-index: 900;
   background: rgba(255, 255, 255, 0.93);
   border-radius: 12px;
-  padding: 1rem 1rem 1rem 1rem;
+  padding: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(6px);
   transition: width 0.25s ease, transform 0.25s ease;
@@ -326,7 +386,8 @@ body {
   font-weight: 700;
   color: #222;
 }
-/* update size of charts here */
+
+/* chart sizing */
 .chart-card canvas {
   width: 100% !important;
 }
@@ -355,6 +416,7 @@ body {
   display: block;
 }
 
+/* leaflet */
 .leaflet-popup-content-wrapper {
   border-radius: 10px;
 }
@@ -376,6 +438,7 @@ body {
   line-height: 32px;
 }
 
+/* misc */
 .metric-badge {
   display: inline-block;
   padding: 0.2rem 0.45rem;
@@ -389,25 +452,10 @@ body {
   display: none !important;
 }
 
+/* responsive */
 @media (max-width: 1200px) {
   #charts-panel {
-    left: 1rem;
-  }
-}
-
-@media (max-width: 768px) {
-  #left-overlay-column {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: calc(100% - 1rem);
-    margin: 0.5rem;
-  }
-
-  #control-panel,
-  #legend-panel {
-    width: 100%;
-    max-height: none;
+    width: 320px;
   }
 }
 
@@ -416,48 +464,23 @@ body {
     width: 300px;
     max-height: calc(100vh - 260px);
   }
-@media (max-width: 1200px) {
-  #charts-panel {
-    width: 320px;
-  }
-}
-/* side charts */
-@media (max-width: 768px) {
-  #charts-panel {
-    position: relative;
-    top: auto;
-    right: auto;
-    bottom: auto;
-    width: calc(100% - 1rem);
-    margin: 0.5rem;
-  }
-
-  #charts-panel.collapsed {
-    width: calc(100% - 1rem);
-  }
-
-  #charts-panel.collapsed #charts-panel-inner {
-    display: none;
-  }
-
-  #charts-panel.collapsed .charts-toggle-btn {
-    writing-mode: horizontal-tb;
-    transform: none;
-    translate: 0 0;
-    left: 0.75rem;
-  }
-}
-/* bottom charts */
-  /* #charts-panel {
-    padding: 0.75rem;
-  } */
-
-  .chart-card {
-    min-height: 220px;
-  }
 }
 
 @media (max-width: 768px) {
+  .intro-modal-body {
+    max-height: 78vh;
+    padding: 1rem;
+  }
+
+  .intro-tabs .nav-link {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .intro-pane-title {
+    font-size: 1.05rem;
+  }
+
   body {
     overflow: auto;
   }
@@ -472,22 +495,59 @@ body {
     height: 60vh;
   }
 
-  #control-panel {
+  #left-overlay-column {
     position: relative;
     top: auto;
     left: auto;
     width: calc(100% - 1rem);
+    margin: 0.5rem;
+  }
+
+  #control-panel,
+  #legend-panel {
+    width: 100%;
     max-height: none;
+  }
+
+  #control-panel {
+    position: relative;
+    top: auto;
+    left: auto;
     margin: 0.5rem;
     z-index: 1000;
   }
 
+  #legend-panel {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: calc(100% - 1rem);
+    margin: 0.5rem;
+  }
+
   #charts-panel {
     position: relative;
-    left: auto;
+    top: auto;
     right: auto;
     bottom: auto;
+    left: auto;
+    width: calc(100% - 1rem);
     margin: 0.5rem;
+  }
+
+  #charts-panel.collapsed {
+    width: calc(100% - 1rem);
+  }
+
+  #charts-panel.collapsed .charts-toggle-btn {
+    writing-mode: horizontal-tb;
+    transform: none;
+    translate: 0 0;
+    left: 0.75rem;
+  }
+
+  .chart-card {
+    min-height: 220px;
   }
 }
 
@@ -507,15 +567,5 @@ body {
   .section-title,
   .chart-title {
     font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 768px) {
-  #legend-panel {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: calc(100% - 1rem);
-    margin: 0.5rem;
   }
 }
