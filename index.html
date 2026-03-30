@@ -184,7 +184,10 @@
 
       <div class="intro-pane-section">
         <p>
-          Accessibility is calculated using a 30-minute travel-time threshold that combines walking and scheduled transit travel.
+          Accessibility is calculated using a 30-minute travel-time threshold that combines walking and scheduled transit travel. This analysis is conducted using ArcGIS Network Analysis Tools.
+        </p>
+        <p>
+          All accessibility metric data is geocoded and aggregated to census blocks.
         </p>
         <p>
           For each census block and time period, the analysis identifies which destinations can be reached within that threshold
@@ -219,10 +222,14 @@
 
       <div class="intro-pane-section">
         <ul class="intro-pane-list mb-0">
-          <li><strong>GTFS:</strong> Transit routes, stops, and schedules.</li>
-          <li><strong>U.S. Census:</strong> Block and tract boundary data.</li>
-          <li><strong>SVI:</strong> Social vulnerability data for contextual comparison.</li>
-          <li><strong>Road Network:</strong> Street network data used to support walking access calculations.</li>
+          <li><strong>Road Network:</strong> Street network data used to support walking access calculations -- <a href="https://edac.unm.edu/new-mexico-911-nm911-program/" target="_blank">Earth Data Analysis Center</a></li>
+          <li><strong>GTFS:</strong> Transit routes, stops, and schedules -- <a href="https://data.cabq.gov/transit/gtfs/" target="_blank">City of Albuquerque</a></li>
+          <li><strong>U.S. Census:</strong> Block and tract boundary data -- <a href="https://data.census.gov/" target="_blank">U.S. Census</a></li>
+          <li><strong>SVI:</strong> Social vulnerability data for contextual comparison. -- <a href="https://www.atsdr.cdc.gov/place-health/php/svi/svi-data-documentation-download.html" target="_blank">Centers for Disease Control</a></li>
+          <li><strong>Employment Data:</strong> Longitudinal Employer-Household Dynamics Survey Job Counts -- <a href="https://lehd.ces.census.gov/data/" target="_blank">U.S. Census LEHD</a></li>
+          <li><strong>Public and Charter School Data:</strong> City of Albuquerque Public and Charter Schools Data -- <a href="https://web.ped.nm.gov/bureaus/options-for-parents-and-families/charter-schools/" target="_blank">NM Public Education Department</a></li>
+          <li><strong>Food Access Data:</strong> SNAP-approved retailers -- <a href="https://www.fns.usda.gov/snap/retailer-locator/data" target="_blank">USDA</a></li>
+          <li><strong>Healthcare Facility Data:</strong> all facilities certified to provide Medicaid-approved care -- <a href="https://catalog.data.gov/dataset/provider-of-services-file-hospital-non-hospital-facilities-f216f" target="_blank">U.S. Department of Health & Human Services</a></li>
         </ul>
       </div>
     </div>
