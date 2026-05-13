@@ -4,6 +4,7 @@
 
 const CONFIG = {
   data: {
+    //choropleth map file name
     blocksUrl: "data/blockfinal.topojson",
     isochroneFolder: "data/"
   },
