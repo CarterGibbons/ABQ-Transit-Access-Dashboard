@@ -17,7 +17,6 @@
   <script src="JS_CSS_downloaded_libraries/leaflet-control-geocoder/Control.Geocoder.js"></script>
   <script src="JS_CSS_downloaded_libraries/topojson/topojson-client.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.3.4/turf.min.js"></script>
-  <script src="JS_CSS_downloaded_libraries/chartjs/chart.umd.js"></script>
   <script src="JS_CSS_downloaded_libraries/d3/d3.v7.js"></script>
   <script src="JS_CSS_downloaded_libraries/d3/d3-hexbin.v0.2.min.js"></script>
   <script src="JS_CSS_downloaded_libraries/simplestatistics/simple-statistics.min.js"></script>
@@ -141,13 +140,6 @@
         </ul>
       </div>
 
-      <!-- <div class="intro-pane-section">
-        <h3 class="h6">Tutorial Video</h3>
-        <p class="mb-2">Watch a short walkthrough of the tool and its features:</p>
-        <p class="mb-0">
-          <a href="#" target="_blank" rel="noopener noreferrer">View tutorial video</a>
-        </p>
-      </div> -->
     </div>
 
     <div class="tab-pane fade" id="metrics-pane" role="tabpanel" aria-labelledby="metrics-tab" tabindex="0">
@@ -205,17 +197,29 @@
       <div class="intro-pane-section">
         <p>
           This project was completed to satisfy requirements for the Master of Science degree in Geography and Environmental Studies
-          at the University of New Mexico.
-        </p>
-      </div>
-
-      <div class="intro-pane-section">
-        <p class="mb-0">
-          This tool would not have been possible without the input and advice of my graduate committee:
+          at the University of New Mexico. This tool would not have been possible without the input and advice of my graduate committee:
           Dr. Liping Yang, Dr. Lisa Losada-Rojas, and Dr. Su Zhang.
         </p>
       </div>
+
+<div class="intro-pane-section">
+  <h3 class="h6">
+          This project is possible thanks to the incredible open-source libraries referenced below:
+  </h3>
+        <ul class="intro-pane-list mb-0">
+  <li><strong><a href="https://leafletjs.com/" target="_blank">Leaflet</a>:</strong> Basemap display and interactive popups</li>
+  <li><strong><a href="https://github.com/perliedman/leaflet-control-geocoder" target="_blank">Leaflet Control Geocoder (with Photon)</a>:</strong> Address searching and geocoding functionality</li>
+  <li><strong><a href="https://getbootstrap.com/" target="_blank">Bootstrap</a>:</strong> Layout organization and responsive page structure</li>
+  <li><strong><a href="https://github.com/topojson/topojson" target="_blank">TopoJSON</a>:</strong> Spatial data simplification and optimized geographic data handling</li>
+  <li><strong><a href="https://turfjs.org/" target="_blank">Turf.js</a>:</strong> Geocoding interactivity and spatial analysis functions</li>
+  <li><strong><a href="https://d3js.org/" target="_blank">D3.js</a>:</strong> Chart generation and data visualization</li>
+  <li><strong><a href="https://simple-statistics.github.io/" target="_blank">Simple Statistics</a>:</strong> Additional choropleth symbology options, including natural breaks classification</li>
+</ul>
+      </div>
+      
     </div>
+    
+    
 
     <div class="tab-pane fade" id="sources-pane" role="tabpanel" aria-labelledby="sources-tab" tabindex="0">
       <h2 class="h5 intro-pane-title">Data Sources</h2>
